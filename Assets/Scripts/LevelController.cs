@@ -174,4 +174,19 @@ public class LevelController : MonoBehaviour
         Tile tile = this.tilePositions[position];
         return tile.IsWalkable();
     }
+
+    /// <summary>
+    /// True if there is no tile or the tile is walkable
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    public bool CanObjectBeRepelToPosition(Vector3 position)
+    {
+        if(!this.tilePositions.ContainsKey(position)) {
+            return true;
+        }
+
+        Tile tile = this.tilePositions[position];
+        return tile.IsWalkable();
+    }
 }

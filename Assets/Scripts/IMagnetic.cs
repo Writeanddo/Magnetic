@@ -25,4 +25,9 @@ public interface IMagnetic
     /// </summary>
     /// <returns></returns>
     GameObject gameObject { get; }
+
+    /// <summary>
+    /// How many tiles can this invoker repel an object
+    /// </summary>
+    int RepelTileDistance { get; }
 }

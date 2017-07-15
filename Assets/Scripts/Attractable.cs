@@ -11,6 +11,11 @@ using UnityEngine;
 public class Attractable : MonoBehaviour, IAttractable
 {
     /// <summary>
+    /// A reference to the levelController
+    /// </summary>
+    LevelController levelController;
+
+    /// <summary>
     /// The object that triggered an attract or repel on this object
     /// </summary>
     IMagnetic invoker;
@@ -69,6 +74,11 @@ public class Attractable : MonoBehaviour, IAttractable
         set { this.followDestination = value; }
     }
 
+    /// <summary>
+    /// Stores the direction in relationship to the invoker
+    /// that this object is positioned at
+    /// </summary>
+    Vector3 positionedAt;
 
     /// <summary>
     /// Initialize
@@ -76,6 +86,7 @@ public class Attractable : MonoBehaviour, IAttractable
     void Start ()
     {
         this.animator = GetComponent<Animator>();
+        this.levelController = FindObjectOfType<LevelController>();
         this.followDestination = this.lastPosition = this.destination = this.transform.position;
 	}
 
@@ -83,6 +94,7 @@ public class Attractable : MonoBehaviour, IAttractable
     /// Saves the ivoker
     /// Sets the destination to be one tile adjacent to the invoker
     /// Initated the animation that shows this will be attracted
+    /// Saves the position in relation to the invoker at this moment too
     /// </summary>
     /// <param name="invoker"></param>
     public void Attract(IMagnetic invoker)
@@ -100,9 +112,24 @@ public class Attractable : MonoBehaviour, IAttractable
         float z = invokerPosition.z;
         
         if(sameRow) {
-            x += this.transform.position.x < x ? -1 : 1;
+            // Invoker is on the left
+            if(this.transform.position.x < x) {
+                x += -1;
+                this.positionedAt = Vector3.left;
+            } else {
+                x += 1;
+                this.positionedAt = Vector3.right;
+            }
+            
         } else {
-            z += this.transform.position.z < z ? -1 : 1;
+            // Invoker is behind
+            if(this.transform.position.z < z) {
+                z += -1;
+                this.positionedAt = Vector3.back;
+            } else {
+                z += 1;
+                this.positionedAt = Vector3.forward;
+            }
         }
 
         this.followDestination = this.destination = new Vector3(x, 0f, z);
@@ -118,9 +145,30 @@ public class Attractable : MonoBehaviour, IAttractable
         this.isBeingAttracted = false;
     }
 
+    /// <summary>
+    /// Invoker is pushing this object away
+    /// calculate where it should go and begin movement
+    /// </summary>
+    /// <param name="invoker"></param>
     public void Repel(IMagnetic invoker)
     {
-        throw new NotImplementedException();
+        this.isBeingAttracted = false;
+        Vector3 destination = this.transform.position;
+
+        // Tile can be null or walkable
+        // If it is not available then we have a destination
+        for(int i = 1; i <= invoker.RepelTileDistance; i++) {
+            Vector3 targetDestination = this.transform.position + this.positionedAt * i;
+
+            if(this.levelController.CanObjectBeRepelToPosition(targetDestination)) {
+                destination = targetDestination;
+            } else {
+                break;
+            }
+        }
+
+        this.destination = destination;
+        StartCoroutine("MoveToDestination");
     }
    
     /// <summary>
@@ -152,8 +200,15 @@ public class Attractable : MonoBehaviour, IAttractable
             yield return null;
         }
 
-        // Done moving which mean we are "attached"
+        // Snap to location
         this.transform.position = this.destination;
-        this.invoker.Attach(this);
+
+        // Object has been either attached or detached
+        if(this.isBeingAttracted) {
+            this.invoker.Attach(this);
+        } else {
+            this.invoker.Detach(this);
+        }
+        
     }
 }

@@ -38,6 +38,19 @@ public class PlayerController : MonoBehaviour, IMagnetic
     public float Speed { get { return this.speed; } }
 
     /// <summary>
+    /// Total tiles the player can push/repel and object away
+    /// </summary>
+    [SerializeField]
+    int repelTileDistance = 2;
+    public int RepelTileDistance
+    {
+        get
+        {
+            return this.repelTileDistance;
+        }
+    }
+
+    /// <summary>
     /// How many "tiles" away from the player can an object be attracted from
     /// </summary>
     [SerializeField]
@@ -149,6 +162,12 @@ public class PlayerController : MonoBehaviour, IMagnetic
         // But player has opted to stop this
         } else if(!this.isAttracting && objectsPending) {
             this.CancelAttraction();
+        
+        // Push any objects away
+        } else if(!this.isAttracting) {
+            this.Repel();
+            // Re-evaluate because we may have some now
+            objectsPending = this.attractablesPending.Count > 0;
         }
 
         // No longer waiting on anything
@@ -216,8 +235,11 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// Pushes all attached objects away
     /// </summary>
     void Repel()
-    {
-
+    {        
+        foreach(IAttractable attractable in this.attractables) {
+            this.attractablesPending.Add(attractable);
+            attractable.Repel(this);
+        }
     }
 
     /// <summary>
