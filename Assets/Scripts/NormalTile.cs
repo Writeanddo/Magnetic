@@ -11,6 +11,6 @@ public class NormalTile : Tile
     /// <summary>
     /// Nothing happens for Normal tiles
     /// </summary>
-    public override void Disable(){}
-    public override void Enable(){}
+    public override void IsAvailable(){}
+    public override bool IsWalkable(){ return true; }
 }

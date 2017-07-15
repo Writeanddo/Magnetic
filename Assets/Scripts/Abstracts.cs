@@ -3,22 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Tile : MonoBehaviour, IEnableable
+public abstract class Tile : MonoBehaviour
 {
     /// <summary>
     /// True when the tile has been trigger to be enabled
     /// By default all tiles are off since until the player triggers them
     /// </summary>
     [SerializeField]
-    protected bool isEnabled = false;
+    protected bool hasObject = false;
 
     /// <summary>
     /// Triggers the behavior when tile is enabled
     /// </summary>
-    public abstract void Enable();
+    public abstract bool IsWalkable();
 
     /// <summary>
     /// Triggers the behavior when tile is disabled
     /// </summary>
-    public abstract void Disable();
+    public abstract void IsAvailable();
 }

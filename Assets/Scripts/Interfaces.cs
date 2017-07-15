@@ -10,10 +10,10 @@ public interface IEnableable
     /// <summary>
     /// Triggers the enabled state 
     /// </summary>
-    void Enable();
+    void IsWalkable();
 
     /// <summary>
     /// Triggers the disabled state
     /// </summary>
-    void Disable();
+    void IsAvailable();
 }
