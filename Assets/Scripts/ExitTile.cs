@@ -60,6 +60,26 @@ public class ExitTile : Tile
     float sceneLoadDelay = 1f;
 
     /// <summary>
+    /// Sound to play when the exit is activated
+    /// </summary>
+    [SerializeField]
+    AudioClip activedClip;
+
+    /// <summary>
+    /// Sound to play when the exit is deactivated 
+    /// </summary>
+    [SerializeField]
+    AudioClip deactivatedClip;
+
+    /// <summary>
+    /// Sound to play when the player is on the exit
+    /// </summary>
+    [SerializeField]
+    AudioClip exitSound;
+
+
+
+    /// <summary>
     /// Initialize
     /// </summary>
     void Start()
@@ -79,19 +99,7 @@ public class ExitTile : Tile
             switchTile.SwitchDeactivatedEvent += this.OnSwitchOff;
         }
     }
-
-    /// <summary>
-    /// Displays the proper material to represent it state
-    /// </summary>
-    void Update()
-    {
-        if(this.DoorIsLocked) {
-            this.renderer.material = this.lockedMaterial;
-        } else {
-            this.renderer.material = this.unlockedMaterial;
-        }
-    }
-
+    
     /// <summary>
     /// Listens for the switch to delegate becoming active
     /// Increases the counter of active switches
@@ -99,6 +107,12 @@ public class ExitTile : Tile
     public void OnSwitchOn()
     {
         this.activeSwitches++;
+
+        // All switches are active
+        if( !this.DoorIsLocked) {
+            this.PlaySound(this.activedClip);
+            this.renderer.material = this.unlockedMaterial;
+        }
     }
 
     /// <summary>
@@ -108,6 +122,11 @@ public class ExitTile : Tile
     public void OnSwitchOff()
     {
         this.activeSwitches--;
+        // All switches are deactive
+        if( this.DoorIsLocked) {
+            this.PlaySound(this.deactivatedClip);
+            this.renderer.material = this.lockedMaterial;
+        }
     }
 
     /// <summary>
@@ -127,6 +146,7 @@ public class ExitTile : Tile
     {
         if(other.tag == "Player" && !this.winIsTriggered) {
             this.winIsTriggered = true;
+            this.PlaySound(this.exitSound);
             StartCoroutine(this.LoadSceneAfterSeconds(this.nextLevelName, this.sceneLoadDelay));
         }
     }
