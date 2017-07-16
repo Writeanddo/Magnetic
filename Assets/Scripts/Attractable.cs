@@ -239,6 +239,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
 
         // Object has been either attached or detached
         if(this.isBeingAttracted) {
+            this.PlayAttractedSound();
             this.invoker.Attach(this);
         } else {
             this.invoker.Detach(this);
@@ -248,11 +249,17 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     }
 
     /// <summary>
+    /// Plays the sound of this object being attracted if there's one
+    /// The child needs to override it to allow this
+    /// </summary>
+    protected virtual void PlayAttractedSound(){}
+
+    /// <summary>
     /// Disables the mesh render 
     /// Positions the object back at its origin
     /// Waits until there are no other objects in the way to show itself
     /// </summary>
-    public void Respawn()
+    public virtual void Respawn()
     {
         this.transform.position = this.origin;
     }

@@ -7,6 +7,7 @@ using UnityEngine;
 /// Controls the player movement 
 /// Handles attracting and repelling objects
 /// </summary>
+[RequireComponent(typeof(AudioSource))]
 public class PlayerController : MonoBehaviour, IMagnetic
 {
     /// <summary>
@@ -93,6 +94,13 @@ public class PlayerController : MonoBehaviour, IMagnetic
     List<IAttractable> attractablesPending = new List<IAttractable>();
 
     /// <summary>
+    /// True when the player repelled objects
+    /// Remains true while the sound plays
+    /// </summary>
+    [SerializeField]
+    bool isRepelling = false;
+
+    /// <summary>
     /// True when the player has not reached their destination
     /// </summary>
     [SerializeField]
@@ -132,12 +140,36 @@ public class PlayerController : MonoBehaviour, IMagnetic
     private float raycastHeight = 0.25f;
 
     /// <summary>
+    /// A reference to the audio source component
+    /// </summary>
+    protected AudioSource audioSource;
+
+    /// <summary>
+    /// Sound played while the player is attracting
+    /// </summary>
+    [SerializeField]
+    AudioClip attractClip;
+
+    /// <summary>
+    /// Sound played while the player is holding objects
+    /// </summary>
+    [SerializeField]
+    AudioClip holdClip;
+
+    /// <summary>
+    /// Sound played when the player repels objects held
+    /// </summary>
+    [SerializeField]
+    AudioClip repelClip;
+
+    /// <summary>
     /// Initialize
     /// </summary>
     void Start ()
     {
         this.levelController = FindObjectOfType<LevelController>();
         this.destination = this.transform.position;
+        this.audioSource = GetComponent<AudioSource>();
 	}
 
     /// <summary>
@@ -155,7 +187,10 @@ public class PlayerController : MonoBehaviour, IMagnetic
         // Can perform actions while moving
         if(!this.isMoving) {
             this.SetPlayerAction();
-        }        
+        }
+
+        // Play the sounds that match the new player actions
+        this.PlayActionSounds();
 
         // Disable movement while attracting action is happenig
         if(this.canMove) {
@@ -197,6 +232,40 @@ public class PlayerController : MonoBehaviour, IMagnetic
         // Can move even if the is Attracting is enabled
         if(!objectsPending) {
             this.canMove = true;
+        }
+    }
+
+    /// <summary>
+    /// Based on the state of the player plays a sound to match that state
+    /// </summary>
+    void PlayActionSounds()
+    {
+        // Attracting sound is played only when no objects are being held
+        if(this.isAttracting && this.attractables.Count < 1) {
+            this.PlayLoopSound(this.attractClip);
+        }
+
+        // While the player is holding objects play the hold sound
+        if(this.isAttracting && this.attractables.Count > 0) {
+            this.PlayLoopSound(this.holdClip);            
+        }
+
+        // Repelling
+        if(this.isRepelling) {
+
+            // Not already playing it
+            if(this.audioSource.clip != this.repelClip) {
+                this.PlaySound(this.repelClip);
+            }
+
+            // Sound is done - no longer repelling
+            if(!this.audioSource.isPlaying) {
+                this.isRepelling = false;
+            }
+
+        // Stop all sounds
+        } else if(!this.isAttracting) {
+            this.audioSource.Stop();
         }
     }
 
@@ -257,8 +326,9 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// Pushes all attached objects away
     /// </summary>
     void Repel()
-    {        
+    {
         foreach(IAttractable attractable in this.attractables) {
+            this.isRepelling = true;
             this.attractablesPending.Add(attractable);
             attractable.Repel(this);
         }
@@ -346,4 +416,46 @@ public class PlayerController : MonoBehaviour, IMagnetic
     {
         this.attractablesPending.Remove(attractable);
     }
+
+     /// <summary>
+    /// Plays the given sound clip once
+    /// </summary>
+    /// <param name="clip"></param>
+    void PlaySound(AudioClip clip)
+    {
+        this.audioSource.loop = false;
+
+        // Not the current sound
+        if( this.audioSource.clip != clip ) {
+            this.audioSource.Stop();
+            this.audioSource.clip = clip;
+        }
+
+        // Play it only if it is not currently playing
+        if(!this.audioSource.isPlaying) {
+            this.audioSource.Play();
+        }
+    }
+
+    /// <summary>
+    /// Loops the given sound clip
+    /// Triggers the play only once
+    /// Ensures it is the only clip playing
+    /// </summary>
+    /// <param name="clip"></param>
+    void PlayLoopSound(AudioClip clip)
+    {
+        this.audioSource.loop = true;
+
+        // Not the current sound
+        if( this.audioSource.clip != clip ) {
+            this.audioSource.Stop();
+            this.audioSource.clip = clip;
+        }
+
+        // Play it only if it is not currently playing
+        if(!this.audioSource.isPlaying) {
+            this.audioSource.Play();
+        }
+    }    
 }

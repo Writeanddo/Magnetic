@@ -34,6 +34,8 @@ public class HoleTile : Tile
 
     /// <summary>
     /// Hole has been filled with an object
+    /// This is called also when the sound trigger collider is entered
+    /// If that is the case then play the sound of an object entering
     /// </summary>
     /// <param name="other"></param>
     void OnTriggerEnter(Collider other)
