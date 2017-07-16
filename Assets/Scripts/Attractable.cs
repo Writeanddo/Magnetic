@@ -9,6 +9,7 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(AudioSource))]
 public class Attractable : MonoBehaviour, IAttractable, IRespawnable
 {
     /// <summary>
@@ -104,12 +105,18 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     Vector3 positionedAt;
 
     /// <summary>
+    /// A reference to the audio source component
+    /// </summary>
+    protected AudioSource audioSource;
+
+    /// <summary>
     /// Initialize
     /// </summary>
     void Start ()
     {
         this.rigidBody = GetComponent<Rigidbody>();
         this.animator = GetComponent<Animator>();
+        this.audioSource = GetComponent<AudioSource>();
         this.levelController = FindObjectOfType<LevelController>();
         this.origin = this.lastPosition = this.destination = this.transform.position;
 	}

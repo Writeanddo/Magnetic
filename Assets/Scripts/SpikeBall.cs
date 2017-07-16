@@ -20,6 +20,12 @@ public class SpikeBall : Attractable
     bool playerCollision = false;
 
     /// <summary>
+    /// Sound to make on explode
+    /// </summary>
+    [SerializeField]
+    AudioClip explosionClip;
+
+    /// <summary>
     /// Changes the destination to be the invoker's position
     /// This is to allow the bomb to trigger on collision
     /// </summary>
@@ -77,6 +83,8 @@ public class SpikeBall : Attractable
             FindObjectOfType<PlayerController>().IsDefeated = true;
         }
 
+        this.audioSource.clip = this.explosionClip;
+        this.audioSource.Play();
         this.animator.SetTrigger("Explode");        
     }
 
