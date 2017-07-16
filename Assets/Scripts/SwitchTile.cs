@@ -38,6 +38,18 @@ public class SwitchTile : Tile
     public event SwitchActivatedDelegate SwitchActivatedEvent;
     public event SwitchDeactivatedDelegate SwitchDeactivatedEvent;
 
+    /// <summary>
+    /// Sound to play when the switch is activated
+    /// </summary>
+    [SerializeField]
+    AudioClip switchOnClip;
+
+    /// <summary>
+    /// Sound to play when the switch is deactivated 
+    /// </summary>
+    [SerializeField]
+    AudioClip switchOffClip;
+
     // Use this for initialization
     void Start ()
     {
@@ -66,6 +78,7 @@ public class SwitchTile : Tile
             if(this.objectOnTile != other.gameObject) {
                 this.hasObject = true;
                 this.objectOnTile = other.gameObject;
+                this.PlaySound(this.switchOnClip);
 
                 if(this.SwitchActivatedEvent != null) {
                     this.SwitchActivatedEvent();
@@ -84,6 +97,8 @@ public class SwitchTile : Tile
         if(other.gameObject == this.objectOnTile) {
             this.hasObject = false;
             this.objectOnTile = null;
+            this.PlaySound(this.switchOffClip);
+
             if(this.SwitchDeactivatedEvent != null) {
                 this.SwitchDeactivatedEvent();
             }

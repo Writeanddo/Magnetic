@@ -256,4 +256,14 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     {
         this.transform.position = this.origin;
     }
+
+    /// <summary>
+    /// Plays the soundclip given
+    /// </summary>
+    /// <param name="clip"></param>
+    protected void PlaySound(AudioClip clip)
+    {
+        this.audioSource.clip = clip;
+        this.audioSource.Play();
+    }
 }

@@ -83,8 +83,7 @@ public class SpikeBall : Attractable
             FindObjectOfType<PlayerController>().IsDefeated = true;
         }
 
-        this.audioSource.clip = this.explosionClip;
-        this.audioSource.Play();
+        this.PlaySound(this.explosionClip);
         this.animator.SetTrigger("Explode");        
     }
 
