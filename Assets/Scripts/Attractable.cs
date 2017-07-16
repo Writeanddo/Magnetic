@@ -185,7 +185,7 @@ public class Attractable : MonoBehaviour, IAttractable
         for(int i = 1; i <= invoker.RepelTileDistance; i++) {
             Vector3 targetDestination = this.transform.position + this.positionedAt * i;
 
-            if(this.levelController.CanObjectBeRepelToPosition(targetDestination)) {
+            if(this.levelController.IsTileAtPositionAvailable(targetDestination)) {
                 destination = targetDestination;
             } else {
                 break;

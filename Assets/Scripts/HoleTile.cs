@@ -8,9 +8,12 @@ using UnityEngine;
 /// </summary>
 public class HoleTile : Tile
 {
-    public override void IsAvailable()
+    /// <summary>
+    /// Initialize
+    /// </summary>
+    void Start()
     {
-        throw new NotImplementedException();
+        this.type = Type.Hole;
     }
 
     /// <summary>

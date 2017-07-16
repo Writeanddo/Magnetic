@@ -183,13 +183,13 @@ public class LevelController : MonoBehaviour
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
-    public bool CanObjectBeRepelToPosition(Vector3 position)
+    public bool IsTileAtPositionAvailable(Vector3 position)
     {
         if(!this.tilePositions.ContainsKey(position)) {
             return true;
         }
 
         Tile tile = this.tilePositions[position];
-        return tile.IsWalkable();
+        return tile.IsAvailable();
     }
 }

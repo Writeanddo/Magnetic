@@ -6,6 +6,22 @@ using UnityEngine;
 public abstract class Tile : MonoBehaviour
 {
     /// <summary>
+    /// The different types of tiles
+    /// </summary>
+    public enum Type
+    {
+        Normal,
+        Hole,
+        Switch,
+        Goal,
+    }
+    
+    /// <summary>
+    /// This tile's type
+    /// </summary>
+    public Type type;
+
+    /// <summary>
     /// True when the tile has been trigger to be enabled
     /// By default all tiles are off since until the player triggers them
     /// </summary>
@@ -25,5 +41,5 @@ public abstract class Tile : MonoBehaviour
     /// <summary>
     /// Triggers the behavior when tile is disabled
     /// </summary>
-    public abstract void IsAvailable();
+    public bool IsAvailable(){ return !this.hasObject; }
 }

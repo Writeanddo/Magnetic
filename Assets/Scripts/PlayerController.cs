@@ -240,6 +240,8 @@ public class PlayerController : MonoBehaviour, IMagnetic
             this.attractablesPending.Add(attractable);
             attractable.Repel(this);
         }
+
+        this.attractables.Clear();
     }
 
     /// <summary>
@@ -321,6 +323,5 @@ public class PlayerController : MonoBehaviour, IMagnetic
     public void Detach(IAttractable attractable)
     {
         this.attractablesPending.Remove(attractable);
-        this.attractables.Remove(attractable);
     }
 }

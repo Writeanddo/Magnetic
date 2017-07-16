@@ -11,8 +11,15 @@ public class NormalTile : Tile
     /// <summary>
     /// Nothing happens for Normal tiles
     /// </summary>
-    public override void IsAvailable(){}
     public override bool IsWalkable(){ return !this.hasObject; }
+
+    /// <summary>
+    /// Initialize
+    /// </summary>
+    void Start()
+    {
+        this.type = Type.Normal;
+    }
 
     /// <summary>
     /// Triggers the has object true to prevent another from entering this tile
