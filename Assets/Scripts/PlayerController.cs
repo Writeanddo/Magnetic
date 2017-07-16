@@ -375,8 +375,21 @@ public class PlayerController : MonoBehaviour, IMagnetic
             // Where the player could potentially move
             Vector3 targetDestination = this.transform.position + this.inputVector;
 
-            // Tile is available
-            if(this.levelController.IsPositionAvailable(targetDestination)) {
+            // If all attached objects can occupy the target destinaiton
+            // then the player can move 
+            bool childrenCanMove = true;
+            foreach(IAttractable attractable in this.attractables) {
+                Transform goTransform = attractable.ObjectTransform;
+                Vector3 targetPosition = targetDestination + attractable.FollowDestination;
+
+                childrenCanMove = this.levelController.CanAttachableMoveToPosition(targetPosition);
+
+                if(!childrenCanMove) {
+                    break;
+                }
+            }
+
+            if(childrenCanMove && this.levelController.IsPositionAvailable(targetDestination)) {
                 this.destination = targetDestination;
             }
 

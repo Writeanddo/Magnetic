@@ -33,6 +33,23 @@ public abstract class Tile : MonoBehaviour
     protected bool hasObject = false;
 
     /// <summary>
+    /// Returns true if the object this tile contains is one
+    /// that is allowed to be collided with. Meaning, another
+    /// object can occupy the same space
+    /// </summary>
+    public bool HasCollidableObject
+    {
+        get
+        {
+            SpikeBall ball = null;
+            if(this.hasObject) {
+                ball = this.objectOnTile.GetComponent<SpikeBall>();
+            }
+            return ball != null;
+        }
+    }
+
+    /// <summary>
     /// Holds the game object that is currently on the tile 
     /// </summary>
     [SerializeField]

@@ -165,7 +165,8 @@ public class LevelController : MonoBehaviour
 	
     /// <summary>
     /// Checks if the given position has a walkable/available tile
-    /// Returns True if the position is available
+    /// Returns True if there's a tile at the given position and 
+    /// it is walkable
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
@@ -180,7 +181,7 @@ public class LevelController : MonoBehaviour
     }
 
     /// <summary>
-    /// True if there is no tile or the tile is walkable
+    /// True if there is no tile or the tile is available
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
@@ -191,6 +192,36 @@ public class LevelController : MonoBehaviour
         }
 
         Tile tile = this.tilePositions[position];
+        return tile.IsAvailable();
+    }
+
+
+    /// <summary>
+    /// This is stritcly for "attachable" objects where while they 
+    /// are attached to the player they can go:
+    ///     - over the void
+    ///     - Empty tiles and hole tiles regardless of state
+    /// but cannot go
+    ///     - where other attachable objects are at
+    /// 
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    public bool CanAttachableMoveToPosition(Vector3 position)
+    {
+        // Nothing there, allow movement
+        if(!this.tilePositions.ContainsKey(position)) {
+            return true;
+        }
+
+        Tile tile = this.tilePositions[position];
+
+        // Prevent movement into the collidable
+        // Player must repel object into it instead
+        if(tile.HasCollidableObject) {
+            return false;
+        }
+
         return tile.IsAvailable();
     }
 
