@@ -69,12 +69,23 @@ public class SwitchTile : Tile
     /// <param name="other"></param>
     void OnTriggerStay(Collider other)
     {
+        bool saveObject = false;
         this.hasObject = false;
 
         // If this is an attractable object then will ignore it if its being held
         IAttractable attractable = other.GetComponent<IAttractable>();
-        if(attractable != null && !attractable.IsAttached) {
-                        
+
+        // Player is on switch 
+        if(other.tag == "Player") {
+            saveObject = true;
+
+        // An attractable object is on top
+        } else if(attractable != null && !attractable.IsAttached) {
+            saveObject = true;
+        }
+
+        // Proceed with activating the switch
+        if(saveObject) {                        
             if(this.objectOnTile != other.gameObject) {
                 this.hasObject = true;
                 this.objectOnTile = other.gameObject;

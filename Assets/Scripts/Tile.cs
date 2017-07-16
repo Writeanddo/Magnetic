@@ -35,6 +35,7 @@ public abstract class Tile : MonoBehaviour
     /// <summary>
     /// Holds the game object that is currently on the tile 
     /// </summary>
+    [SerializeField]
     protected GameObject objectOnTile;
 
     /// <summary>
