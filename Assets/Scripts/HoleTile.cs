@@ -17,6 +17,13 @@ public class HoleTile : Tile
     }
 
     /// <summary>
+    /// This tile is always available regardless of what's inside or not
+    /// </summary>
+    /// <returns></returns>
+    public override bool IsAvailable(){ return true; }
+
+
+    /// <summary>
     /// Walkable only when it has an object in it
     /// </summary>
     /// <returns></returns>

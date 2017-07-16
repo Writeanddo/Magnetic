@@ -13,7 +13,7 @@ public abstract class Tile : MonoBehaviour
         Normal,
         Hole,
         Switch,
-        Goal,
+        Exit,
     }
     
     /// <summary>
@@ -41,5 +41,5 @@ public abstract class Tile : MonoBehaviour
     /// <summary>
     /// Triggers the behavior when tile is disabled
     /// </summary>
-    public bool IsAvailable(){ return !this.hasObject; }
+    public virtual bool IsAvailable(){ return !this.hasObject; }
 }

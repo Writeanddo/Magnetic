@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody))]
-public class Attractable : MonoBehaviour, IAttractable
+public class Attractable : MonoBehaviour, IAttractable, IRespawnable
 {
     /// <summary>
     /// A reference to the levelController
@@ -20,6 +20,11 @@ public class Attractable : MonoBehaviour, IAttractable
     /// The object that triggered an attract or repel on this object
     /// </summary>
     IMagnetic invoker;
+
+    /// <summary>
+    /// Tile's place origin so that it can respawn
+    /// </summary>
+    Vector3 origin;
 
     /// <summary>
     /// The last position this item was before the invoker cancelled the attract action
@@ -106,10 +111,7 @@ public class Attractable : MonoBehaviour, IAttractable
         this.rigidBody = GetComponent<Rigidbody>();
         this.animator = GetComponent<Animator>();
         this.levelController = FindObjectOfType<LevelController>();
-        this.lastPosition = this.destination = this.transform.position;
-
-        // Make sure gravity is disabled
-        this.rigidBody.useGravity = false;
+        this.origin = this.lastPosition = this.destination = this.transform.position;
 	}
 
     /// <summary>
@@ -236,5 +238,15 @@ public class Attractable : MonoBehaviour, IAttractable
             this.rigidBody.useGravity = true;
         }
         
+    }
+
+    /// <summary>
+    /// Disables the mesh render 
+    /// Positions the object back at its origin
+    /// Waits until there are no other objects in the way to show itself
+    /// </summary>
+    public void Respawn()
+    {
+        this.transform.position = this.origin;
     }
 }

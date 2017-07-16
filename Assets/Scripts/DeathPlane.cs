@@ -13,6 +13,9 @@ public class DeathPlane : MonoBehaviour
     /// <param name="other"></param>
 	void OnTriggerStay(Collider other)
     {
-        Destroy(other.gameObject);
+        IRespawnable respawnable = other.gameObject.GetComponent<IRespawnable>();
+        if(respawnable != null) {
+            respawnable.Respawn();
+        }
     }
 }
