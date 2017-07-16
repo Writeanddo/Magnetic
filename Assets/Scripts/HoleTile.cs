@@ -13,8 +13,21 @@ public class HoleTile : Tile
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Walkable only when it has an object in it
+    /// </summary>
+    /// <returns></returns>
     public override bool IsWalkable()
     {
-        return false;
+        return this.hasObject;
+    }
+
+    /// <summary>
+    /// Hole has been filled with an object
+    /// </summary>
+    /// <param name="other"></param>
+    void OnTriggerEnter(Collider other)
+    {
+        this.hasObject = true;
     }
 }

@@ -8,6 +8,7 @@ using UnityEngine;
 /// repelling it
 /// </summary>
 [RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Rigidbody))]
 public class Attractable : MonoBehaviour, IAttractable
 {
     /// <summary>
@@ -53,6 +54,12 @@ public class Attractable : MonoBehaviour, IAttractable
     float speed = 5f;
 
     /// <summary>
+    /// A reference to the rigid body to which we will be
+    /// enabling and disabling gravity as needed
+    /// </summary>
+    Rigidbody rigidBody;
+
+    /// <summary>
     /// Returns the transform for this object
     /// </summary>
     public Transform ObjectTransform
@@ -70,8 +77,8 @@ public class Attractable : MonoBehaviour, IAttractable
     Vector3 followDestination;
     public Vector3 FollowDestination
     {
-        get { return this.followDestination; }
-        set { this.followDestination = value; }
+        get { return this.positionedAt; }
+        set { this.positionedAt = value; }
     }
 
     /// <summary>
@@ -85,9 +92,13 @@ public class Attractable : MonoBehaviour, IAttractable
     /// </summary>
     void Start ()
     {
+        this.rigidBody = GetComponent<Rigidbody>();
         this.animator = GetComponent<Animator>();
         this.levelController = FindObjectOfType<LevelController>();
-        this.followDestination = this.lastPosition = this.destination = this.transform.position;
+        this.lastPosition = this.destination = this.transform.position;
+
+        // Make sure gravity is disabled
+        this.rigidBody.useGravity = false;
 	}
 
     /// <summary>
@@ -99,6 +110,9 @@ public class Attractable : MonoBehaviour, IAttractable
     /// <param name="invoker"></param>
     public void Attract(IMagnetic invoker)
     {
+        // Make sure gravity is disabled
+        this.rigidBody.useGravity = false;
+
         this.isBeingAttracted = true;
         this.isAnimationDone = false;
         this.invoker = invoker;
@@ -132,7 +146,7 @@ public class Attractable : MonoBehaviour, IAttractable
             }
         }
 
-        this.followDestination = this.destination = new Vector3(x, 0f, z);
+        this.destination = new Vector3(x, 0f, z);
         this.animator.SetTrigger("Spin");
     }
 
@@ -183,7 +197,7 @@ public class Attractable : MonoBehaviour, IAttractable
         } else {
             this.invoker.Detach(this);
             this.invoker = null;
-            this.transform.position = this.followDestination = this.destination = this.lastPosition;
+            this.transform.position = this.destination = this.lastPosition;
         }
         
     }
@@ -201,13 +215,14 @@ public class Attractable : MonoBehaviour, IAttractable
         }
 
         // Snap to location
-        this.transform.position = this.destination;
+        this.lastPosition = this.transform.position = this.destination;
 
         // Object has been either attached or detached
         if(this.isBeingAttracted) {
             this.invoker.Attach(this);
         } else {
             this.invoker.Detach(this);
+            this.rigidBody.useGravity = true;
         }
         
     }

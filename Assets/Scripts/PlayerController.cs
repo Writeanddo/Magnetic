@@ -128,17 +128,17 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// </summary>
     void Update()
     {
+        this.SetInputVector();
+
         // Can perform actions while moving
         if(!this.isMoving) {
             this.SetPlayerAction();
-        }
-        
-        this.SetInputVector();
+        }        
 
         // Disable movement while attracting action is happenig
         if(this.canMove) {
             this.Move();
-        }        
+        }
     }
 
     /// <summary>
@@ -166,9 +166,10 @@ public class PlayerController : MonoBehaviour, IMagnetic
         // Push any objects away
         } else if(!this.isAttracting) {
             this.Repel();
-            // Re-evaluate because we may have some now
-            objectsPending = this.attractablesPending.Count > 0;
         }
+                
+        // Re-evaluate because we may have some now
+        objectsPending = this.attractablesPending.Count > 0;
 
         // No longer waiting on anything
         // Can move even if the is Attracting is enabled
@@ -183,7 +184,6 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// </summary>
     void Attract()
     {
-
         // We've calculated from this position so prevent doing so again
         this.attractedFromPosition = this.transform.position;
 
@@ -217,7 +217,7 @@ public class PlayerController : MonoBehaviour, IMagnetic
                     }
                 }
             }
-        } // foreach
+        } // foreach        
     }
 
     /// <summary>
@@ -275,7 +275,7 @@ public class PlayerController : MonoBehaviour, IMagnetic
             // Snap the childs too
             foreach(IAttractable attractable in this.attractables) {
                 Transform goTransform = attractable.ObjectTransform;
-                goTransform.position = attractable.FollowDestination;
+                goTransform.position = this.destination + attractable.FollowDestination;
             }
             
             // Where the player could potentially move
@@ -284,12 +284,6 @@ public class PlayerController : MonoBehaviour, IMagnetic
             // Tile is available
             if(this.levelController.IsPositionAvailable(targetDestination)) {
                 this.destination = targetDestination;
-
-                // Update the children's destination
-                foreach(IAttractable attractable in this.attractables) {
-                    Transform goTransform = attractable.ObjectTransform;
-                    attractable.FollowDestination = goTransform.position + this.inputVector;
-                }
             }
 
         // Still Moving
@@ -301,7 +295,8 @@ public class PlayerController : MonoBehaviour, IMagnetic
             // Move all attached objects
             foreach(IAttractable attractable in this.attractables) {
                 Transform goTransform = attractable.ObjectTransform;
-                targetDestination = Vector3.Lerp(goTransform.position, attractable.FollowDestination, this.speed * Time.deltaTime);
+                Vector3 targetPosition = this.destination + attractable.FollowDestination;                
+                targetDestination = Vector3.Lerp(goTransform.position, targetPosition, this.speed * Time.deltaTime);
                 goTransform.position = targetDestination;
             }
         }
@@ -313,8 +308,9 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// <param name="attractable"></param>
     public void Attach(IAttractable attractable)
     {
-        this.attractablesPending.Remove(attractable);
         this.attractables.Add(attractable);
+        this.attractablesPending.Remove(attractable);
+        Debug.Log("Attached");
     }
 
     /// <summary>

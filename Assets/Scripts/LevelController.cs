@@ -60,7 +60,10 @@ public class LevelController : MonoBehaviour
                 tile.transform.position.z
             );
 
-            this.tilePositions.Add(position, tile);
+            // Avoid duplicates
+            if( !this.tilePositions.ContainsKey(position) ) {
+                this.tilePositions.Add(position, tile);
+            }            
         }
 
         // Save the current angle
