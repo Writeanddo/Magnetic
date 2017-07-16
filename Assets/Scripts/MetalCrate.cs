@@ -52,8 +52,8 @@ public class MetalCrate : Attractable
     /// </summary>
     public override void Respawn()
     {
-        base.Respawn();
         this.rigidBody.velocity = Vector3.zero;
         this.soundPlayed = false;
+        base.Respawn();
     }
 }

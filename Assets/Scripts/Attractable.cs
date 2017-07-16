@@ -90,11 +90,12 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     /// <summary>
     /// True when the object is being attracted
     /// </summary>
+    bool isAttached = false;
     public bool IsAttached
     {
         get
         {
-            return this.isBeingAttracted;
+            return this.isAttached;
         }
     }
 
@@ -110,6 +111,11 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     protected AudioSource audioSource;
 
     /// <summary>
+    /// A refrence to the particle system component
+    /// </summary>
+    protected ParticleSystem particle;
+
+    /// <summary>
     /// Initialize
     /// </summary>
     void Start ()
@@ -118,6 +124,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
         this.animator = GetComponent<Animator>();
         this.audioSource = GetComponent<AudioSource>();
         this.levelController = FindObjectOfType<LevelController>();
+        this.particle = GetComponentInChildren<ParticleSystem>();
         this.origin = this.lastPosition = this.destination = this.transform.position;
 	}
 
@@ -218,8 +225,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
             this.invoker.Detach(this);
             this.invoker = null;
             this.transform.position = this.destination = this.lastPosition;
-        }
-        
+        }        
     }
 
     /// <summary>
@@ -241,8 +247,10 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
         if(this.isBeingAttracted) {
             this.PlayAttractedSound();
             this.invoker.Attach(this);
+            this.isAttached = true;
         } else {
             this.invoker.Detach(this);
+            this.isAttached = false;
             this.rigidBody.useGravity = true;
         }
         
@@ -255,13 +263,31 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     protected virtual void PlayAttractedSound(){}
 
     /// <summary>
-    /// Disables the mesh render 
-    /// Positions the object back at its origin
-    /// Waits until there are no other objects in the way to show itself
+    /// Disables the rigidbody to prevent continous falling
+    /// Puts the object really high in the air so that it is not visible
+    /// while it waits for its origin to be available and "re-spawn"
     /// </summary>
     public virtual void Respawn()
     {
+        this.rigidBody.useGravity = false;
+        this.transform.position = new Vector3(0f, 50f, 0f);
+        StartCoroutine("RespawnWhenAvailable");
+    }
+
+    /// <summary>
+    /// Waits until the this object's origin is available before moving it back to origin
+    /// </summary>
+    /// <returns></returns>
+    protected IEnumerator RespawnWhenAvailable()
+    {
+        // Wait until spot is available to respawn
+        while(!this.levelController.IsPositionAvailable(this.origin)) {
+            yield return null;
+        }
+        
+        // Makes the object "re-appear" where it started
         this.transform.position = this.origin;
+        this.particle.Play();
     }
 
     /// <summary>

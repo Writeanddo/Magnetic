@@ -42,10 +42,24 @@ public abstract class Tile : MonoBehaviour
         get
         {
             SpikeBall ball = null;
-            if(this.hasObject) {
+            if(this.hasObject && this.objectOnTile != null) {
                 ball = this.objectOnTile.GetComponent<SpikeBall>();
             }
             return ball != null;
+        }
+    }
+
+    /// <summary>
+    /// Returns true if the object on this tile is the player
+    /// </summary>
+    public bool IsPlayerOnTile
+    {
+        get {
+            bool isPlayer = false;
+            if(this.objectOnTile != null) {
+                isPlayer = this.objectOnTile.tag == "Player";
+            }            
+            return isPlayer;
         }
     }
 

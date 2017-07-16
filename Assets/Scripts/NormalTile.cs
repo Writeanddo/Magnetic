@@ -9,6 +9,14 @@ using UnityEngine;
 public class NormalTile : Tile
 {
     /// <summary>
+    /// Initialize
+    /// </summary>
+    void Start()
+    {
+        this.type = Type.Normal;
+    }
+
+    /// <summary>
     /// Nothing happens for Normal tiles
     /// </summary>
     public override bool IsWalkable(){ return !this.hasObject; }
@@ -31,20 +39,19 @@ public class NormalTile : Tile
     }
 
     /// <summary>
-    /// Initialize
-    /// </summary>
-    void Start()
-    {
-        this.type = Type.Normal;
-    }
-
-    /// <summary>
     /// Triggers the has object true to prevent another from entering this tile
     /// </summary>
     /// <param name="other"></param>
     void OnTriggerStay(Collider other)
     {
         this.hasObject = false;
+
+        // It's the player
+        if(other.tag == "Player") {
+            this.hasObject = true;
+            this.objectOnTile = other.gameObject;
+            return;
+        }
 
         // If this is an attractable object then will ignore it if its being held
         IAttractable attractable = other.GetComponent<IAttractable>();

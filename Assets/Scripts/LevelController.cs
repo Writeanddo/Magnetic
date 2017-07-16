@@ -222,6 +222,12 @@ public class LevelController : MonoBehaviour
             return false;
         }
 
+        // Tile is not available because player is on it?
+        // The still allow them to move
+        if(!tile.IsAvailable()) {
+            return tile.IsPlayerOnTile;
+        }
+
         return tile.IsAvailable();
     }
 
