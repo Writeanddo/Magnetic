@@ -104,6 +104,23 @@ public class PlayerController : MonoBehaviour, IMagnetic
     bool canMove = true;
 
     /// <summary>
+    /// True when the player can no longer be controlled
+    /// and is waiting to either respawn or the level to reload
+    /// </summary>
+    bool isDefeated = false;
+    public bool IsDefeated
+    {
+        get
+        {
+            return this.isDefeated;
+        }
+        set
+        {
+            this.isDefeated = value;
+        }
+    }
+
+    /// <summary>
     /// The layer to look for when casting the ray during the attract
     /// </summary>
     [SerializeField]
@@ -128,6 +145,11 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// </summary>
     void Update()
     {
+        // Can't do anything
+        if(this.isDefeated) {
+            return;
+        }
+
         this.SetInputVector();
 
         // Can perform actions while moving

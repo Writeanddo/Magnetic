@@ -14,6 +14,23 @@ public class NormalTile : Tile
     public override bool IsWalkable(){ return !this.hasObject; }
 
     /// <summary>
+    /// Override to support a spikeball being on top marking this
+    /// tile as still available
+    /// </summary>
+    /// <returns></returns>
+    public override bool IsAvailable()
+    {
+        // A crate can be on the same place as a spikeball when repelled
+        // this is how this method is being invoked
+        if(this.hasObject) {
+            SpikeBall ball = this.objectOnTile.GetComponent<SpikeBall>();
+            return ball != null;
+        }
+
+        return !this.hasObject;
+    }
+
+    /// <summary>
     /// Initialize
     /// </summary>
     void Start()

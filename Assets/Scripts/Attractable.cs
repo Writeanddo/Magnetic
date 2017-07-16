@@ -14,7 +14,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     /// <summary>
     /// A reference to the levelController
     /// </summary>
-    LevelController levelController;
+    protected LevelController levelController;
 
     /// <summary>
     /// The object that triggered an attract or repel on this object
@@ -35,7 +35,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     /// Where to move to when being attracted
     /// </summary>
     [SerializeField]
-    Vector3 destination;
+    protected Vector3 destination;
 
     /// <summary>
     /// True while the object is being attracted
@@ -50,19 +50,19 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     /// <summary>
     /// A reference to the animator component
     /// </summary>
-    Animator animator;
+    protected Animator animator;
 
     /// <summary>
     /// How fast the object moves when attaching to the invoker
     /// </summary>
     [SerializeField]
-    float speed = 5f;
+    float speed = 8f;
 
     /// <summary>
     /// A reference to the rigid body to which we will be
     /// enabling and disabling gravity as needed
     /// </summary>
-    Rigidbody rigidBody;
+    protected Rigidbody rigidBody;
 
     /// <summary>
     /// Returns the transform for this object
@@ -121,7 +121,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     /// Saves the position in relation to the invoker at this moment too
     /// </summary>
     /// <param name="invoker"></param>
-    public void Attract(IMagnetic invoker)
+    public virtual void Attract(IMagnetic invoker)
     {
         // Make sure gravity is disabled
         this.rigidBody.useGravity = false;
@@ -219,7 +219,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     /// Moves towards the destination until reached
     /// </summary>
     /// <returns></returns>
-    IEnumerator MoveToDestination()
+    protected IEnumerator MoveToDestination()
     {
         // target not reached - move
         while( Vector3.Distance(this.destination, this.transform.position) > 0.1f ) {

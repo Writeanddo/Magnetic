@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Creates a list of all tile locations to know which tiles are available to the player
@@ -191,5 +192,13 @@ public class LevelController : MonoBehaviour
 
         Tile tile = this.tilePositions[position];
         return tile.IsAvailable();
+    }
+
+    /// <summary>
+    /// Reloads the current level
+    /// </summary>
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

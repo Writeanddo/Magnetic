@@ -1,0 +1,146 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+[RequireComponent(typeof(Renderer))]
+public class ExitTile : Tile
+{
+    /// <summary>
+    /// Total switches required to open the exist
+    /// </summary>
+    int totalSwitches = 0;
+
+    /// <summary>
+    /// Total switches enabled
+    /// </summary>
+    int activeSwitches = 0;
+
+    /// <summary>
+    /// True when not all expected switches have been enabled
+    /// </summary>
+    bool DoorIsLocked
+    {
+        get { return this.activeSwitches != this.totalSwitches; }
+    }
+
+    /// <summary>
+    /// Material to display when the exit is still locked
+    /// </summary>
+    [SerializeField]
+    Material lockedMaterial;
+
+    /// <summary>
+    /// Material to display when the exit is unlocked
+    /// </summary>
+    [SerializeField]
+    Material unlockedMaterial;
+
+    /// <summary>
+    /// Holds a reference to renderer component
+    /// </summary>
+    new Renderer renderer;
+
+    /// <summary>
+    /// The name of the scene to teleport the player to when this tile is reached
+    /// </summary>
+    [SerializeField]
+    string nextLevelName;
+
+    /// <summary>
+    /// True when the player enters this tile after turning the switches on
+    /// </summary>
+    bool winIsTriggered = false;
+
+    /// <summary>
+    /// How long to wait before loading the next scene
+    /// </summary>
+    [SerializeField]
+    float sceneLoadDelay = 1f;
+
+    /// <summary>
+    /// Initialize
+    /// </summary>
+    void Start()
+    {
+        this.type = Type.Exit;
+        this.renderer = GetComponent<Renderer>();
+
+        // Fail safe, set it to self if next scene is unknown
+        if(string.IsNullOrEmpty(this.nextLevelName)) {
+            this.nextLevelName = SceneManager.GetActiveScene().name;
+        }
+
+        // Register the switches events to know when a switch is activated/deactivated
+        foreach(SwitchTile switchTile in FindObjectsOfType<SwitchTile>()) {
+            this.totalSwitches++;
+            switchTile.SwitchActivatedEvent += this.OnSwitchOn;
+            switchTile.SwitchDeactivatedEvent += this.OnSwitchOff;
+        }
+    }
+
+    /// <summary>
+    /// Displays the proper material to represent it state
+    /// </summary>
+    void Update()
+    {
+        if(this.DoorIsLocked) {
+            this.renderer.material = this.lockedMaterial;
+        } else {
+            this.renderer.material = this.unlockedMaterial;
+        }
+    }
+
+    /// <summary>
+    /// Listens for the switch to delegate becoming active
+    /// Increases the counter of active switches
+    /// </summary>
+    public void OnSwitchOn()
+    {
+        this.activeSwitches++;
+    }
+
+    /// <summary>
+    /// Listens for the switch to delegate becoming unactive
+    /// Decreases the counter of active switches
+    /// </summary>
+    public void OnSwitchOff()
+    {
+        this.activeSwitches--;
+    }
+
+    /// <summary>
+    /// Only when all switches have been turned is when this becomes enabled
+    /// </summary>
+    /// <returns></returns>
+    public override bool IsWalkable()
+    {
+        return !this.DoorIsLocked;
+    }
+    
+    /// <summary>
+    /// Player Entered this tile
+    /// Trigger win condition
+    /// </summary>
+    public void OnTriggerStay(Collider other)
+    {
+        if(other.tag == "Player" && !this.winIsTriggered) {
+            this.winIsTriggered = true;
+            StartCoroutine(this.LoadSceneAfterSeconds(this.nextLevelName, this.sceneLoadDelay));
+        }
+    }
+
+    /// <summary>
+    /// Loads the given scene after the given time has passed
+    /// </summary>
+    /// <param name="sceneName"></param>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    IEnumerator LoadSceneAfterSeconds(string sceneName, float time)
+    {
+        yield return new WaitForSeconds(time);
+        SceneManager.LoadScene(sceneName);
+    }
+}
+
