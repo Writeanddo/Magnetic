@@ -31,4 +31,9 @@ public interface IAttractable
     /// Sets the destination for this object to "follow" the invoker
     /// </summary>
     Vector3 FollowDestination { set; get; }
+
+    /// <summary>
+    /// True when the object is attached to the invoker
+    /// </summary>
+    bool IsAttached { get; }
 }

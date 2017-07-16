@@ -310,7 +310,6 @@ public class PlayerController : MonoBehaviour, IMagnetic
     {
         this.attractables.Add(attractable);
         this.attractablesPending.Remove(attractable);
-        Debug.Log("Attached");
     }
 
     /// <summary>

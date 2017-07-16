@@ -13,6 +13,11 @@ public abstract class Tile : MonoBehaviour
     protected bool hasObject = false;
 
     /// <summary>
+    /// Holds the game object that is currently on the tile 
+    /// </summary>
+    protected GameObject objectOnTile;
+
+    /// <summary>
     /// Triggers the behavior when tile is enabled
     /// </summary>
     public abstract bool IsWalkable();

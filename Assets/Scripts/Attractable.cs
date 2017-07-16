@@ -82,6 +82,17 @@ public class Attractable : MonoBehaviour, IAttractable
     }
 
     /// <summary>
+    /// True when the object is being attracted
+    /// </summary>
+    public bool IsAttached
+    {
+        get
+        {
+            return this.isBeingAttracted;
+        }
+    }
+
+    /// <summary>
     /// Stores the direction in relationship to the invoker
     /// that this object is positioned at
     /// </summary>
