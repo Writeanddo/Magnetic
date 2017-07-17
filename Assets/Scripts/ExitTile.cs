@@ -143,7 +143,7 @@ public class ExitTile : Tile
     /// <returns></returns>
     public override bool IsWalkable()
     {
-        return !this.DoorIsLocked;
+        return true;
     }
     
     /// <summary>
@@ -152,7 +152,7 @@ public class ExitTile : Tile
     /// </summary>
     public void OnTriggerStay(Collider other)
     {
-        if(other.tag == "Player" && !this.winIsTriggered) {
+        if(other.tag == "Player" && !this.winIsTriggered && !this.DoorIsLocked) {
             this.winIsTriggered = true;
             this.PlaySound(this.exitSound);
             StartCoroutine(this.LoadSceneAfterSeconds(this.nextLevelName, this.sceneLoadDelay));
