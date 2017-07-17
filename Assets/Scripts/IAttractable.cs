@@ -36,4 +36,5 @@ public interface IAttractable
     /// True when the object is attached to the invoker
     /// </summary>
     bool IsAttached { get; }
+    bool IsFalling { get;}
 }

@@ -59,6 +59,7 @@ public class LevelMenu : MonoBehaviour
 
     /// <summary>
     /// Opens the menu only once
+    /// Show Cursor
     /// </summary>
     public void OpenMenu()
     {
@@ -67,6 +68,7 @@ public class LevelMenu : MonoBehaviour
             return;
         }
 
+        Cursor.visible = true;
         this.menuIsOpened = true;
         this.menuGO.SetActive(true);
         FindObjectOfType<PlayerController>().IsDisabled = true;
@@ -74,6 +76,7 @@ public class LevelMenu : MonoBehaviour
 
     /// <summary>
     /// Closes the menu only once
+    /// Hides the cursor
     /// </summary>
     public void CloseMenu()
     {
@@ -82,6 +85,7 @@ public class LevelMenu : MonoBehaviour
             return;
         }
 
+        Cursor.visible = false;
         this.menuIsOpened = false;
         this.menuGO.SetActive(false);
         FindObjectOfType<PlayerController>().IsDisabled = false;

@@ -168,7 +168,12 @@ public class ExitTile : Tile
     IEnumerator LoadSceneAfterSeconds(string sceneName, float time)
     {
         yield return new WaitForSeconds(time);
-        SceneManager.LoadScene(sceneName);
+
+        if(sceneName == "MainMenu") {
+            FindObjectOfType<LevelController>().MainMenu();
+        } else {
+            SceneManager.LoadScene(sceneName);
+        }        
     }
 }
 

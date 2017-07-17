@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 /// <summary>
 /// Handles high level transactions such as:
 ///     - Keep track of player's progress
 ///     - Play music based on loaded scene
+/// 
+/// Saves the levels unlocked
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class GameManager : MonoBehaviour
@@ -40,24 +44,43 @@ public class GameManager : MonoBehaviour
     string firstLevelName;
 
     /// <summary>
-    /// The name of the next level/scene to load
-    /// </summary>
-    [SerializeField]
-    public string nextLevelName;
-
-    /// <summary>
     /// Name of the main menu for when the player wants to return
     /// </summary>
     [SerializeField]
     string mainMenuSceneName;
 
     /// <summary>
+    /// A list of levels unlocked
+    /// Starts with the fist level minimum
+    /// </summary>
+    [SerializeField]
+    List<string> levelsUnlocked = new List<string>() { "Level_1" };
+
+    /// <summary>
+    /// The name/location of the save file
+    /// </summary>
+    string SaveFilePath;
+
+    /// <summary>
+    /// Returns true if the given level name is unlocked
+    /// </summary>
+    /// <param name="levelName"></param>
+    /// <returns></returns>
+    public bool IsLevelUnlocked(string levelName)
+    {
+        return this.levelsUnlocked.Contains(levelName);
+    }
+
+    /// <summary>
     /// Prevents more than once instance of the GameManager
+    /// Loads last played session
     /// </summary>
     void Awake()
     {
         if(instance == null) {
             instance = this;
+            this.SaveFilePath = Application.persistentDataPath + "/magnetic.gd";
+            this.LoadGame();
         } else {
             Destroy(this.gameObject);
         }
@@ -89,15 +112,6 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         SceneManager.LoadScene(this.firstLevelName);
-        this.PlayLevelMusic();
-    }
-
-    /// <summary>
-    /// Tranistions to the next level
-    /// </summary>
-    public void NextLevel()
-    {
-        SceneManager.LoadScene(this.nextLevelName);
         this.PlayLevelMusic();
     }
 
@@ -147,4 +161,66 @@ public class GameManager : MonoBehaviour
             this.audioSource.Play();
         }
     }   
+
+    /// <summary>
+    /// Loads the given level
+    /// </summary>
+    /// <param name="level"></param>
+    public void LoadLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);
+        this.PlayLevelMusic();
+    }
+
+    /// <summary>
+    /// Called when a level is loaded to add to the list of levels unlocked
+    /// </summary>
+    public void LevelUnlocked(string levelName)
+    {
+        // Already know about this level
+        if(this.levelsUnlocked.Contains(levelName)) {
+            return;
+        }
+
+        // Save the new level
+        this.levelsUnlocked.Add(levelName);
+        this.SaveGame();
+    }
+
+    /// <summary>
+    /// Saves currently unlocked levels
+    /// </summary>
+    public void SaveGame()
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(this.SaveFilePath);
+        bf.Serialize(file, this.levelsUnlocked);
+        file.Close();
+    } // SaveGame
+
+
+    /// <summary>
+    /// Loads unlocked levels
+    /// </summary>
+    public void LoadGame()
+    {
+        if( ! this.SaveFileExists() ) {
+            return;
+        }
+
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Open(this.SaveFilePath, FileMode.Open);
+
+        this.levelsUnlocked = (List<string>)bf.Deserialize(file);        
+        file.Close();
+    } // LoadGame
+
+
+    /// <summary>
+    /// Returns TRUE if the save file exists
+    /// </summary>
+    public bool SaveFileExists()
+    {
+        return File.Exists(this.SaveFilePath);
+    } // SaveFileExists
 }

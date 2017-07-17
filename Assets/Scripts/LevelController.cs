@@ -54,10 +54,21 @@ public class LevelController : MonoBehaviour
     float angleDamping = 1f;
 
     /// <summary>
+    /// Mark this level as unclocked
+    /// Hides the cursor
+    /// </summary>
+    void Awake()
+    {
+        GameManager.instance.LevelUnlocked(SceneManager.GetActiveScene().name);
+    }
+
+    /// <summary>
     /// Creates the tilemap
+    ///  Hides the cursor
     /// </summary>
     void Start ()
     {
+        Cursor.visible = false;
         Tile[] tiles = FindObjectsOfType<Tile>() as Tile[];
         foreach(Tile tile in tiles) {
             // Ignore y axis as it needs to be 0

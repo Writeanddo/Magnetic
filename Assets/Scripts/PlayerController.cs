@@ -246,7 +246,13 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// Based on the state of the player plays a sound to match that state
     /// </summary>
     void PlayActionSounds()
-    {
+    { 
+        // Gives priority to this clip
+        if(this.isRepelling) {
+            this.isRepelling = false;
+            this.PlaySound(this.repelClip, true); 
+        }
+
         // Attracting sound is played only when no objects are being held
         if(this.isAttracting && this.attractables.Count < 1) {
             this.PlayLoopSound(this.attractClip);
@@ -255,24 +261,6 @@ public class PlayerController : MonoBehaviour, IMagnetic
         // While the player is holding objects play the hold sound
         if(this.isAttracting && this.attractables.Count > 0) {
             this.PlayLoopSound(this.holdClip);            
-        }
-
-        // Repelling
-        if(this.isRepelling) {
-
-            // Not already playing it
-            if(this.audioSource.clip != this.repelClip) {
-                this.PlaySound(this.repelClip);
-            }
-
-            // Sound is done - no longer repelling
-            if(!this.audioSource.isPlaying) {
-                this.isRepelling = false;
-            }
-
-        // Stop all sounds
-        } else if(!this.isAttracting) {
-            this.audioSource.Stop();
         }
     }
 
@@ -310,6 +298,12 @@ public class PlayerController : MonoBehaviour, IMagnetic
 
                 IAttractable attractable = hitInfo.collider.GetComponent<IAttractable>();
                 if(attractable != null) {
+
+                    // Ignore falling objects
+                    if(attractable.IsFalling) {
+                        continue;
+                    }
+
                     // Found a new attractable item
                     bool isNew = !this.attractables.Contains(attractable) && !this.attractablesPending.Contains(attractable);
                     if(isNew) {
@@ -445,9 +439,14 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// Plays the given sound clip once
     /// </summary>
     /// <param name="clip"></param>
-    void PlaySound(AudioClip clip)
+    void PlaySound(AudioClip clip, bool isHighPrority = false)
     {
-        this.audioSource.loop = false;
+        // Wait for current sound to stop
+        if(this.audioSource.isPlaying && !isHighPrority) {
+            return;
+        }
+
+        //this.audioSource.loop = false;
 
         // Not the current sound
         if( this.audioSource.clip != clip ) {
@@ -469,6 +468,10 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// <param name="clip"></param>
     void PlayLoopSound(AudioClip clip)
     {
+
+        this.PlaySound(clip);
+        return;
+
         this.audioSource.loop = true;
 
         // Not the current sound

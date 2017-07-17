@@ -106,6 +106,17 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     }
 
     /// <summary>
+    /// Returns true if the object is falling
+    /// </summary>
+    public bool IsFalling
+    {
+        get
+        {
+            return this.rigidBody.velocity.y < 0;
+        }
+    }
+
+    /// <summary>
     /// Stores the direction in relationship to the invoker
     /// that this object is positioned at
     /// </summary>
