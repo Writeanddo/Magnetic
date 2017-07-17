@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Simple script to allow buttons to trigger the singleton instance of the gamemanager
 /// </summary>
+[RequireComponent(typeof(AudioSource))]
 public class MainMenu : MonoBehaviour
 {
     /// <summary>
@@ -20,13 +21,41 @@ public class MainMenu : MonoBehaviour
     GameObject LevelSelectGO;
 
     /// <summary>
+    /// A reference to the audio source component
+    /// </summary>
+    AudioSource audioSource;
+
+    /// <summary>
+    /// Initialize
+    /// </summary>
+    void Start()
+    {
+        this.audioSource = GetComponent<AudioSource>();
+        GameManager.instance.PlayMainMenuMusic();
+    }
+
+    /// <summary>
     /// Hides the main select 
     /// Shows the level select
     /// </summary>
 	public void PlayGame()
     {
-        this.MainSelectGO.SetActive(false);
-        this.LevelSelectGO.SetActive(true);
+        this.audioSource.Play();
+        if(this.MainSelectGO != null) {
+            this.MainSelectGO.SetActive(false);
+        }
+        if(this.LevelSelectGO != null) {
+            this.LevelSelectGO.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// Goes to the main menu
+    /// </summary>
+    public void GoToMainMenu()
+    {
+         this.audioSource.Play();
+        GameManager.instance.LoadLevel("MainMenu");
     }
 
     /// <summary>
@@ -34,6 +63,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void Exit()
     {
+        this.audioSource.Play();
         GameManager.instance.Exit();
     }
 
@@ -43,6 +73,7 @@ public class MainMenu : MonoBehaviour
     /// <param name="levelButton"></param>
     public void GoToScene(LevelSelectButton levelButton)
     {
+        this.audioSource.Play();
         GameManager.instance.LoadLevel(levelButton.SceneName);
     }
 }

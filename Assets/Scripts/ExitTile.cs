@@ -93,6 +93,8 @@ public class ExitTile : Tile
     {
         this.type = Type.Exit;
 
+        this.childRenderer.materials[1].color = this.lockedColor;
+
         // Fail safe, set it to self if next scene is unknown
         if(string.IsNullOrEmpty(this.nextLevelName)) {
             this.nextLevelName = SceneManager.GetActiveScene().name;

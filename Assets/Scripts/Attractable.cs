@@ -303,9 +303,9 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     protected IEnumerator RespawnWhenAvailable()
     {
         // Wait until spot is available to respawn
-        //while(!this.levelController.IsPositionAvailable(this.origin)) {
-        //    yield return null;
-        //}
+        while(!this.levelController.IsPositionAvailable(this.origin)) {
+            yield return null;
+        }
         yield return null;
         
         // Makes the object "re-appear" where it started
