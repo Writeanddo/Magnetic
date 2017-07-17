@@ -29,18 +29,25 @@ public class ExitTile : Tile
     /// Material to display when the exit is still locked
     /// </summary>
     [SerializeField]
-    Material lockedMaterial;
+    Color lockedColor;
 
     /// <summary>
     /// Material to display when the exit is unlocked
     /// </summary>
     [SerializeField]
-    Material unlockedMaterial;
+    Color openedColor;
 
     /// <summary>
     /// Holds a reference to renderer component
     /// </summary>
-    new Renderer renderer;
+    [SerializeField]
+    Renderer childRenderer;
+
+    /// <summary>
+    /// Holds a reference to particle system
+    /// </summary>
+    [SerializeField]
+    ParticleSystem particle;
 
     /// <summary>
     /// The name of the scene to teleport the player to when this tile is reached
@@ -85,7 +92,6 @@ public class ExitTile : Tile
     void Start()
     {
         this.type = Type.Exit;
-        this.renderer = GetComponent<Renderer>();
 
         // Fail safe, set it to self if next scene is unknown
         if(string.IsNullOrEmpty(this.nextLevelName)) {
@@ -111,7 +117,8 @@ public class ExitTile : Tile
         // All switches are active
         if( !this.DoorIsLocked) {
             this.PlaySound(this.activedClip);
-            this.renderer.material = this.unlockedMaterial;
+            particle.Play();
+            this.childRenderer.materials[1].color = this.openedColor;
         }
     }
 
@@ -125,7 +132,8 @@ public class ExitTile : Tile
         // All switches are deactive
         if( this.DoorIsLocked) {
             this.PlaySound(this.deactivatedClip);
-            this.renderer.material = this.lockedMaterial;
+            particle.Stop();
+            this.childRenderer.materials[1].color = this.lockedColor;
         }
     }
 

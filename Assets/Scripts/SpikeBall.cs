@@ -26,6 +26,20 @@ public class SpikeBall : Attractable
     AudioClip explosionClip;
 
     /// <summary>
+    /// How fast to rotate this object
+    /// </summary>
+    [SerializeField]
+    float rotationSpeed = 6f;
+
+    /// <summary>
+    /// Rotate this object
+    /// </summary>
+    void LateUpdate()
+    {
+        this.transform.Rotate(new Vector3(0f, this.rotationSpeed * Time.deltaTime, 0f));
+    }
+
+    /// <summary>
     /// Changes the destination to be the invoker's position
     /// This is to allow the bomb to trigger on collision
     /// </summary>
@@ -80,7 +94,7 @@ public class SpikeBall : Attractable
         // Stops the coroutine that keeps moving this towards the invoker
         if(collidedWithPlayer) {
             StopCoroutine("MoveToDestination");
-            FindObjectOfType<PlayerController>().IsDefeated = true;
+            FindObjectOfType<PlayerController>().IsDisabled = true;
         }
 
         this.PlaySound(this.explosionClip);

@@ -11,6 +11,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour, IMagnetic
 {
     /// <summary>
+    /// How many units per tile helps determine when moving how much to increate the 
+    /// move vector to keep the grid-base movement
+    /// </summary>
+    int unitsPerTile = 2;
+
+    /// <summary>
     /// A reference to the levelController
     /// </summary>
     LevelController levelController;
@@ -115,16 +121,16 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// True when the player can no longer be controlled
     /// and is waiting to either respawn or the level to reload
     /// </summary>
-    bool isDefeated = false;
-    public bool IsDefeated
+    bool isDisabled = false;
+    public bool IsDisabled
     {
         get
         {
-            return this.isDefeated;
+            return this.isDisabled;
         }
         set
         {
-            this.isDefeated = value;
+            this.isDisabled = value;
         }
     }
 
@@ -170,6 +176,7 @@ public class PlayerController : MonoBehaviour, IMagnetic
         this.levelController = FindObjectOfType<LevelController>();
         this.destination = this.transform.position;
         this.audioSource = GetComponent<AudioSource>();
+        this.unitsPerTile = this.levelController.unitsPerTile;
 	}
 
     /// <summary>
@@ -178,7 +185,7 @@ public class PlayerController : MonoBehaviour, IMagnetic
     void Update()
     {
         // Can't do anything
-        if(this.isDefeated) {
+        if(this.isDisabled) {
             return;
         }
 
@@ -292,11 +299,14 @@ public class PlayerController : MonoBehaviour, IMagnetic
 
         foreach(Vector3 direction in directions) {
             // Show a line in the editor to see when we are calculating for attraction
-            Debug.DrawLine(origin, this.transform.position + direction * this.attractionDistance);
+            Debug.DrawLine(origin, this.transform.position + direction * (this.attractionDistance* this.unitsPerTile));
 
+            // The ray destination needs to be calculated with units per tile in mind
+            int rayDestination = this.attractionDistance * this.unitsPerTile;
             Ray ray = new Ray(origin, direction);
             RaycastHit hitInfo;
-            if(Physics.Raycast(ray, out hitInfo, this.attractionDistance, this.attractableLayer)) {
+
+            if(Physics.Raycast(ray, out hitInfo, rayDestination, this.attractableLayer)) {
 
                 IAttractable attractable = hitInfo.collider.GetComponent<IAttractable>();
                 if(attractable != null) {
@@ -349,7 +359,8 @@ public class PlayerController : MonoBehaviour, IMagnetic
             v = 0f;
         }
 
-        this.inputVector = new Vector3(h, 0f, v);
+        // Multiply by the units per tile since the player always moves one unit at a time
+        this.inputVector = new Vector3(h, 0f, v) * this.unitsPerTile;
     }
 
     /// <summary>

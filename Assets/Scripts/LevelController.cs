@@ -10,6 +10,12 @@ using UnityEngine.SceneManagement;
 public class LevelController : MonoBehaviour
 {
     /// <summary>
+    /// How many units per tile helps determine when moving how much to increate the 
+    /// move vector to keep the grid-base movement
+    /// </summary>
+    public int unitsPerTile = 2;
+
+    /// <summary>
     /// Holds a list of a tile positions on the map 
     /// As well as the tile script itself for quick reference
     /// </summary>
@@ -237,5 +243,13 @@ public class LevelController : MonoBehaviour
     public void RestartLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    /// <summary>
+    /// Goes to main menu
+    /// </summary>
+    public void MainMenu()
+    {
+        GameManager.instance.MainMenu();
     }
 }

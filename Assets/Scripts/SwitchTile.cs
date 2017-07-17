@@ -50,10 +50,29 @@ public class SwitchTile : Tile
     [SerializeField]
     AudioClip switchOffClip;
 
+    /// <summary>
+    /// Color to display when the switch is active
+    /// </summary>
+    [SerializeField]
+    Color activedColor;
+
+    /// <summary>
+    /// Color to display when the switch is not active
+    /// </summary>
+    [SerializeField]
+    Color deacivatedColor;
+
+    /// <summary>
+    /// A reference to the child renderer so that we can change the material color
+    /// </summary>
+    Renderer childRenderer;
+
     // Use this for initialization
     void Start ()
     {
 		this.type = Type.Switch;
+        this.childRenderer = this.transform.GetChild(0).GetComponent<Renderer>();
+        this.childRenderer.materials[2].color = this.deacivatedColor;
 	}
 
     /// <summary>
@@ -90,6 +109,7 @@ public class SwitchTile : Tile
                 this.hasObject = true;
                 this.objectOnTile = other.gameObject;
                 this.PlaySound(this.switchOnClip);
+                this.childRenderer.materials[2].color = this.activedColor;
 
                 if(this.SwitchActivatedEvent != null) {
                     this.SwitchActivatedEvent();
@@ -109,6 +129,7 @@ public class SwitchTile : Tile
             this.hasObject = false;
             this.objectOnTile = null;
             this.PlaySound(this.switchOffClip);
+            this.childRenderer.materials[2].color = this.deacivatedColor;
 
             if(this.SwitchDeactivatedEvent != null) {
                 this.SwitchDeactivatedEvent();

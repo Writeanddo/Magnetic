@@ -13,6 +13,12 @@ using UnityEngine;
 public class Attractable : MonoBehaviour, IAttractable, IRespawnable
 {
     /// <summary>
+    /// How many units per tile helps determine when moving how much to increate the 
+    /// move vector to keep the grid-base movement
+    /// </summary>
+    int unitsPerTile = 2;
+
+    /// <summary>
     /// A reference to the levelController
     /// </summary>
     protected LevelController levelController;
@@ -126,6 +132,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
         this.levelController = FindObjectOfType<LevelController>();
         this.particle = GetComponentInChildren<ParticleSystem>();
         this.origin = this.lastPosition = this.destination = this.transform.position;
+        this.unitsPerTile = this.levelController.unitsPerTile;
 	}
 
     /// <summary>
@@ -152,27 +159,30 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
         float x = invokerPosition.x;
         float z = invokerPosition.z;
         
+        // Ensure to update by the units per tile or else the object will not align properly
         if(sameRow) {
             // Invoker is on the left
             if(this.transform.position.x < x) {
-                x += -1;
+                x += -1 * this.unitsPerTile;
                 this.positionedAt = Vector3.left;
             } else {
-                x += 1;
+                x += 1 * this.unitsPerTile;
                 this.positionedAt = Vector3.right;
             }
             
         } else {
             // Invoker is behind
             if(this.transform.position.z < z) {
-                z += -1;
+                z += -1 * this.unitsPerTile;
                 this.positionedAt = Vector3.back;
             } else {
-                z += 1;
+                z += 1 * this.unitsPerTile;
                 this.positionedAt = Vector3.forward;
             }
         }
 
+        // Account for total units per tile
+        this.positionedAt *= this.unitsPerTile;
         this.destination = new Vector3(x, 0f, z);
         this.animator.SetTrigger("Spin");
     }
@@ -236,7 +246,8 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     {
         // target not reached - move
         while( Vector3.Distance(this.destination, this.transform.position) > 0.1f ) {
-            this.transform.position = Vector3.Lerp(this.transform.position, this.destination, this.speed * Time.deltaTime);
+            Vector3 newPosition = Vector3.Lerp(this.transform.position, this.destination, this.speed * Time.deltaTime);
+            this.transform.position = newPosition;
             yield return null;
         }
 
@@ -281,9 +292,10 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     protected IEnumerator RespawnWhenAvailable()
     {
         // Wait until spot is available to respawn
-        while(!this.levelController.IsPositionAvailable(this.origin)) {
-            yield return null;
-        }
+        //while(!this.levelController.IsPositionAvailable(this.origin)) {
+        //    yield return null;
+        //}
+        yield return null;
         
         // Makes the object "re-appear" where it started
         this.transform.position = this.origin;
