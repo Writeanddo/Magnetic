@@ -30,6 +30,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     void Start()
     {
+        Cursor.visible = true;
         this.audioSource = GetComponent<AudioSource>();
         GameManager.instance.PlayMainMenuMusic();
     }
