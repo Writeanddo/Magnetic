@@ -52,6 +52,18 @@ public class LevelController : MonoBehaviour
     /// </summary>
     [SerializeField]
     float angleDamping = 1f;
+    
+    /// <summary>
+    /// The LayerMask that all the Tiles are using
+    /// </summary>
+    [SerializeField]
+    LayerMask tileLayerMask;
+
+    /// <summary>
+    /// The length (a.k.a distance) to cast the ray the checks for tiles
+    /// </summary>
+    [SerializeField]
+    float raycastDistance = 2f;
 
     /// <summary>
     /// Mark this level as unclocked
@@ -178,22 +190,49 @@ public class LevelController : MonoBehaviour
         Vector3 newPosition = new Vector3(globalPosition.x, 0f, globalPosition.z);
         return newPosition;
     }
+
+    /// <summary>
+    /// Casts a ray downwards from the origin given to check for collisions with a "Tile"
+    /// Returns the tile script when it finds one otherwise it returns null
+    /// </summary>
+    /// <param name="origin"></param>
+    /// <param name="rayColor"></param>
+    Tile GetTileAtPosition(Vector3 origin, Color rayColor)
+    {
+        Tile tile = null;
+
+        float distance = this.raycastDistance;
+        RaycastHit hitInfo;
+        Ray ray = new Ray(origin, Vector3.down);
+
+        // Found a tile
+        if(Physics.Raycast(ray, out hitInfo, distance, this.tileLayerMask)) {
+            tile = hitInfo.collider.GetComponent<Tile>();
+        }
+
+        return tile;
+    }
 	
     /// <summary>
     /// Checks if the given position has a walkable/available tile
     /// Returns True if there's a tile at the given position and 
     /// it is walkable
+    /// 
+    /// Casts a ray on from the given position downwards to see 
+    /// if there's a walkable tile.
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
 	public bool IsPositionAvailable(Vector3 position)
     {
-        if(!this.tilePositions.ContainsKey(position)) {
-            return false;
-        }
+        Tile tile = this.GetTileAtPosition(position, Color.red);
 
-        Tile tile = this.tilePositions[position];
-        return tile.IsWalkable();
+        //if(!this.tilePositions.ContainsKey(position)) {
+        //    return false;
+        //}
+
+        //Tile tile = this.tilePositions[position];
+        return tile != null && tile.IsWalkable();
     }
 
     /// <summary>
@@ -203,12 +242,14 @@ public class LevelController : MonoBehaviour
     /// <returns></returns>
     public bool IsTileAtPositionAvailable(Vector3 position)
     {
-        if(!this.tilePositions.ContainsKey(position)) {
-            return true;
-        }
+        Tile tile = this.GetTileAtPosition(position, Color.blue);
 
-        Tile tile = this.tilePositions[position];
-        return tile.IsAvailable();
+        //if(!this.tilePositions.ContainsKey(position)) {
+        //    return true;
+        //}
+
+        //Tile tile = this.tilePositions[position];
+        return tile == null || tile.IsAvailable();
     }
 
     /// <summary>
@@ -218,8 +259,9 @@ public class LevelController : MonoBehaviour
     /// <returns></returns>
     public bool IsPositionVoid(Vector3 position)
     {
-        bool exists = this.tilePositions.ContainsKey(position);
-        return !exists;
+        Tile tile = this.GetTileAtPosition(position, Color.yellow);
+        // bool exists = this.tilePositions.ContainsKey(position);
+        return tile == null;
     }
 
     /// <summary>
@@ -230,10 +272,15 @@ public class LevelController : MonoBehaviour
     public bool IsEmptyHoleTile(Vector3 position)
     {
         HoleTile tile = null;
+        Tile tileAtPosition = this.GetTileAtPosition(position, Color.green);
 
-        if(this.tilePositions.ContainsKey(position)) {
-            tile = this.tilePositions[position].GetComponent<HoleTile>();
+        if(tileAtPosition != null) {
+            tile = tileAtPosition.GetComponent<HoleTile>();
         }
+        
+        //if(this.tilePositions.ContainsKey(position)) {
+        //    tile = this.tilePositions[position].GetComponent<HoleTile>();
+        //}
 
         return tile != null && !tile.IsWalkable();
     }
@@ -252,12 +299,12 @@ public class LevelController : MonoBehaviour
     /// <returns></returns>
     public bool CanAttachableMoveToPosition(Vector3 position)
     {
-        // Nothing there, allow movement
-        if(!this.tilePositions.ContainsKey(position)) {
-            return true;
-        }
+        Tile tile = this.GetTileAtPosition(position, Color.magenta);
 
-        Tile tile = this.tilePositions[position];
+        // Nothing there, allow movement
+        if(tile == null) {
+            return true;
+        }        
 
         // Prevent movement into the collidable
         // Player must repel object into it instead
