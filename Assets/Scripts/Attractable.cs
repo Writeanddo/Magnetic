@@ -350,8 +350,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
         while(!this.levelController.IsPositionAvailable(this.origin)) {
             yield return null;
         }
-        yield return null;
-        
+
         // Makes the object "re-appear" where it started
         this.transform.position = this.lastPosition = this.origin;
         this.particle.Play();

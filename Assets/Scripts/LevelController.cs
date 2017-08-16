@@ -204,6 +204,7 @@ public class LevelController : MonoBehaviour
         float distance = this.raycastDistance;
         RaycastHit hitInfo;
         Ray ray = new Ray(origin, Vector3.down);
+        Debug.DrawRay(origin, Vector3.down, rayColor, 1f);
 
         // Found a tile
         if(Physics.Raycast(ray, out hitInfo, distance, this.tileLayerMask)) {

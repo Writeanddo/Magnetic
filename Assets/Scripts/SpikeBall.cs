@@ -118,12 +118,16 @@ public class SpikeBall : Attractable
     }
 
     /// <summary>
-    /// Called during the explosion animation to reload the level
+    /// Called after the explosion animation is done by the animator
+    /// To either restart the level if it collided with the player or
+    /// disable itself if it was destroyed by anything else
     /// </summary>
-    public void RestartLevel()
+    public void ExplosionCompleted()
     {
         if(this.playerCollision) {
             this.levelController.RestartLevel();
+        } else {
+            this.gameObject.SetActive(false);
         }
     }
 }
