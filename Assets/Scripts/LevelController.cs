@@ -115,7 +115,7 @@ public class LevelController : MonoBehaviour
     /// </summary>
     void LateUpdate()
     {
-        //this.Rotate();
+        this.Rotate();
     }
 
     /// <summary>
@@ -124,9 +124,9 @@ public class LevelController : MonoBehaviour
     void SavePlayerInput()
     {
         // If we have not reached the desired rotation then ignore input
-        //if(this.transform.eulerAngles != this.desiredRotation) {
-        //    return;
-        //}
+        if(this.transform.eulerAngles != this.desiredRotation) {
+            return;
+        }
 
         float left = Input.GetKeyDown(KeyCode.Q) ? -1:0;
         float right = Input.GetKeyDown(KeyCode.E) ? 1:0;

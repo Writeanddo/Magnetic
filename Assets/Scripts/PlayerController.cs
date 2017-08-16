@@ -301,7 +301,7 @@ public class PlayerController : MonoBehaviour, IMagnetic
 
         foreach(Vector3 direction in directions) {
             // Show a line in the editor to see when we are calculating for attraction
-            Debug.DrawLine(origin, this.transform.position + direction * (this.attractionDistance* this.unitsPerTile));
+            Debug.DrawLine(origin, origin + direction * (this.attractionDistance * this.unitsPerTile));
 
             // The ray destination needs to be calculated with units per tile in mind
             int rayDestination = this.attractionDistance * this.unitsPerTile;
