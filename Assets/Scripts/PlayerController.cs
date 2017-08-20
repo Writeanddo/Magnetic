@@ -76,14 +76,12 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// <summary>
     /// True when the player is waiting for object to be "attached"
     /// </summary>
-    [SerializeField]
     bool waitForAttachables = false;
 
     /// <summary>
     /// True when the player was waiting for attacheables and they
     /// are all attached
     /// </summary>
-    [SerializeField]
     bool doneWaitingForAttachables = false;
 
     /// <summary>
@@ -91,7 +89,6 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// This helps prevent the attraction logic from happening more than onces per
     /// tile the player stands on and allows them to move
     /// </summary>
-    [SerializeField]
     Vector3 attractedFromPosition = new Vector3(-1, -1f, -1f);
 
     /// <summary>
@@ -116,13 +113,11 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// True when the player repelled objects
     /// Remains true while the sound plays
     /// </summary>
-    [SerializeField]
     bool isRepelling = false;
 
     /// <summary>
     /// True when the player has not reached their destination
     /// </summary>
-    [SerializeField]
     bool isMoving = false;
     
     /// <summary>
@@ -182,6 +177,13 @@ public class PlayerController : MonoBehaviour, IMagnetic
     AudioClip repelClip;
 
     /// <summary>
+    /// A refrence to the partical system to make them "play"
+    /// when the player is attracting and stop when the player is not
+    /// </summary>
+    [SerializeField]
+    ParticleSystem particles;
+
+    /// <summary>
     /// Initialize
     /// </summary>
     void Start ()
@@ -208,6 +210,16 @@ public class PlayerController : MonoBehaviour, IMagnetic
         // Can perform actions while moving
         if(!this.isMoving) {
             this.SetPlayerAction();
+        }
+
+        // Show the effects of attracting
+        if(this.isAttracting) {
+            // Show the attracting effect
+            if(!this.particles.isPlaying) {
+                this.particles.Play();
+            }
+        } else {
+            this.particles.Stop();
         }
 
         // Play the sounds that match the new player actions
@@ -283,7 +295,7 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// attract them to the player 
     /// </summary>
     void Attract()
-    {
+    {        
         // We've calculated from this position so prevent doing so again
         this.attractedFromPosition = this.transform.position;
 
@@ -465,8 +477,6 @@ public class PlayerController : MonoBehaviour, IMagnetic
         if(this.audioSource.isPlaying && !isHighPrority) {
             return;
         }
-
-        //this.audioSource.loop = false;
 
         // Not the current sound
         if( this.audioSource.clip != clip ) {
