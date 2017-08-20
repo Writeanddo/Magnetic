@@ -331,6 +331,16 @@ public class LevelController : MonoBehaviour
     }
 
     /// <summary>
+    /// Loads the next scene (a.k.a level)
+    /// Note: that on the last level it goes to the "Win" scene
+    ///       this operates with the understanding that the levels are sequential in the scene list build
+    /// </summary>
+    public void GoToNextLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    /// <summary>
     /// Goes to main menu
     /// </summary>
     public void MainMenu()

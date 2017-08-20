@@ -59,12 +59,6 @@ public class ExitTile : Tile
     ParticleSystem particle;
 
     /// <summary>
-    /// The name of the scene to teleport the player to when this tile is reached
-    /// </summary>
-    [SerializeField]
-    string nextLevelName;
-
-    /// <summary>
     /// True when the player enters this tile after turning the switches on
     /// </summary>
     bool winIsTriggered = false;
@@ -101,11 +95,6 @@ public class ExitTile : Tile
         this.type = Type.Exit;
         this.childRenderer = this.transform.GetChild(0).GetComponent<Renderer>();
         this.childRenderer.material = this.closedMaterial;
-
-        // Fail safe, set it to self if next scene is unknown
-        if(string.IsNullOrEmpty(this.nextLevelName)) {
-            this.nextLevelName = SceneManager.GetActiveScene().name;
-        }
 
         // Register the switches events to know when a switch is activated/deactivated
         foreach(SwitchTile switchTile in FindObjectsOfType<SwitchTile>()) {
@@ -177,25 +166,19 @@ public class ExitTile : Tile
         if(other.tag == "Player" && !this.winIsTriggered && !this.DoorIsLocked) {
             this.winIsTriggered = true;
             this.PlaySound(this.exitSound);
-            StartCoroutine(this.LoadSceneAfterSeconds(this.nextLevelName, this.sceneLoadDelay));
+            StartCoroutine(this.LoadSceneAfterSeconds(this.sceneLoadDelay));
         }
     }
 
     /// <summary>
-    /// Loads the given scene after the given time has passed
+    /// Notifies the level controller to load the next level
     /// </summary>
-    /// <param name="sceneName"></param>
     /// <param name="time"></param>
     /// <returns></returns>
-    IEnumerator LoadSceneAfterSeconds(string sceneName, float time)
+    IEnumerator LoadSceneAfterSeconds(float time)
     {
         yield return new WaitForSeconds(time);
-
-        if(sceneName == "MainMenu") {
-            FindObjectOfType<LevelController>().MainMenu();
-        } else {
-            SceneManager.LoadScene(sceneName);
-        }        
+        FindObjectOfType<LevelController>().GoToNextLevel();     
     }
 }
 
