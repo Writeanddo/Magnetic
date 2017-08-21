@@ -395,7 +395,7 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     public virtual void Respawn()
     {
         this.rigidBody.useGravity = false;
-        this.transform.position = new Vector3(0f, 50f, 0f);
+        this.transform.position = new Vector3(0f, -10f, 0f);
         StartCoroutine("RespawnWhenAvailable");
     }
 
