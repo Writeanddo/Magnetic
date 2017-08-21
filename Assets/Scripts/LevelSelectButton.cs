@@ -54,7 +54,6 @@ public class LevelSelectButton : MonoBehaviour
     void Awake()
     {
         if(!GameManager.instance.IsLevelUnlocked(this.SceneName)) {
-            GetComponent<Image>().enabled = false;
             GetComponent<Button>().interactable = false;
             return;
         }

@@ -143,6 +143,24 @@ public class PlayerController : MonoBehaviour, IMagnetic
     }
 
     /// <summary>
+    /// Unlike IsDisabled where everything stops
+    /// This one simply ignores player controls
+    /// </summary>
+    bool controlsDisabled = false;
+    public bool ControlsDisabled
+    {
+        get
+        {
+            return this.controlsDisabled;
+        }
+        set
+        {
+            this.controlsDisabled = value;
+        }
+    }
+
+    
+    /// <summary>
     /// The layer to look for when casting the ray during the attract
     /// </summary>
     [SerializeField]
@@ -211,10 +229,12 @@ public class PlayerController : MonoBehaviour, IMagnetic
             return;
         }
 
-        this.SetInputVector();
+        if(!this.controlsDisabled) {
+            this.SetInputVector();
+        }
 
         // Can perform actions while moving
-        if(!this.isMoving) {
+        if(!this.controlsDisabled && !this.isMoving) {
             this.SetPlayerAction();
         }
 

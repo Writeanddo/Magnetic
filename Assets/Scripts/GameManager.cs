@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
     {
         if(instance == null) {
             instance = this;
-            this.SaveFilePath = Application.persistentDataPath + "/magnetic.gd";
+            this.SaveFilePath = Application.persistentDataPath + "/magnetic_postjam.gd";
             this.LoadGame();
         } else {
             Destroy(this.gameObject);

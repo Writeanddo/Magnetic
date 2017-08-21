@@ -167,7 +167,7 @@ public class ExitTile : Tile
             this.winIsTriggered = true;
             this.PlaySound(this.exitSound);
             StartCoroutine(this.LoadSceneAfterSeconds(this.sceneLoadDelay));
-            other.gameObject.GetComponent<PlayerController>().IsDisabled = true;
+            other.gameObject.GetComponent<PlayerController>().ControlsDisabled = true;
 
         // this may be an attractable item
         } else {
