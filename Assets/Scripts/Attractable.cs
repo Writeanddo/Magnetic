@@ -71,7 +71,6 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     [SerializeField]
     protected float repelledSpeed = 15f;
 
-
     /// <summary>
     /// A reference to the rigid body to which we will be
     /// enabling and disabling gravity as needed
@@ -153,6 +152,41 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     protected bool playAttractAnimation = true;
 
     /// <summary>
+    /// True while the coroutine to move towards the invoker
+    /// is running. This helps determine if the player cancelled
+    /// while the object was already moving towards them or not
+    /// </summary>
+    protected bool isMovingToDestination = false;
+
+    /// <summary>
+    /// True when the player cancels the attraction while the object 
+    /// is still moving towards them
+    /// </summary>
+    protected bool attractionCancelled = false;
+
+    /// <summary>
+    /// True when not moving towards a destination 
+    /// </summary>
+    public bool CanBeAttracted
+    {
+        get { return !this.isMovingToDestination;  }
+    }
+
+    /// <summary>
+    /// A reference to the spawner title 
+    /// This is the tile where this object first starts at
+    /// as well as the tile it respawns on when triggered to respawn
+    /// </summary>
+    [SerializeField]
+    SpawnerTile spawnerTile;
+
+    /// <summary>
+    /// A reference to the tile layer for ray casting
+    /// </summary>
+    [SerializeField]
+    LayerMask tileLayer;
+
+    /// <summary>
     /// Initialize
     /// </summary>
     void Start ()
@@ -164,6 +198,13 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
         this.particle = GetComponentInChildren<ParticleSystem>();
         this.origin = this.lastPosition = this.destination = this.transform.position;
         this.unitsPerTile = this.levelController.unitsPerTile;
+
+        Ray ray = new Ray(this.transform.position, Vector3.down);
+        RaycastHit hitInfo;
+
+        if(Physics.Raycast(ray, out hitInfo, 2f, this.tileLayer)) {
+            this.spawnerTile = hitInfo.collider.GetComponent<SpawnerTile>();
+        }
 	}
 
     /// <summary>
@@ -242,6 +283,11 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     /// </summary>
     public void CancelAttract()
     {
+        // Object was already moving towards the invoker when the attraction was cancelled
+        if(this.isMovingToDestination && this.isBeingAttracted) {
+            this.attractionCancelled = true;
+        }
+
         this.isBeingAttracted = false;
     }
 
@@ -295,6 +341,8 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
     /// <returns></returns>
     protected IEnumerator MoveToDestination(int speed)
     {
+        this.isMovingToDestination = true;
+
         // target not reached - move
         while( Vector3.Distance(this.destination, this.transform.position) > 0.05f ) {
             Vector3 newPosition = Vector3.MoveTowards(
@@ -307,14 +355,25 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
             yield return new WaitForEndOfFrame();
         }
 
+        // Done moving
+        this.isMovingToDestination = false;
+
         // Snap to location
         this.lastPosition = this.transform.position = this.destination;
-
-        // Object has been either attached or detached
+        
+        // Attached
         if(this.isBeingAttracted) {
             this.PlayAttractedSound();
             this.invoker.Attach(this);
             this.isAttached = true;
+
+        // invoker cancelled the attraction after it had started - repel
+        } else if(this.attractionCancelled) {
+            this.invoker.PlayRepelSound();
+            this.attractionCancelled = false;
+            this.Repel(invoker);
+
+        // Detached
         } else {
             this.invoker.Detach(this);
             this.isAttached = false;
@@ -353,7 +412,11 @@ public class Attractable : MonoBehaviour, IAttractable, IRespawnable
 
         // Makes the object "re-appear" where it started
         this.transform.position = this.lastPosition = this.origin;
-        this.particle.Play();
+
+        // Play the particles
+        if(this.spawnerTile != null) {
+            this.spawnerTile.PlayParticles();
+        }
     }
 
     /// <summary>

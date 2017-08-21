@@ -337,7 +337,16 @@ public class LevelController : MonoBehaviour
     /// </summary>
     public void GoToNextLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        int currentBuild = SceneManager.GetActiveScene().buildIndex;
+        int nextBuild =  currentBuild + 1;
+        string nextScene = SceneUtility.GetScenePathByBuildIndex(nextBuild);
+
+        // Fail safe if the next scene is not build then reload this one
+        if(string.IsNullOrEmpty(nextScene)) {
+            nextBuild = currentBuild;
+        }
+
+        SceneManager.LoadScene(nextBuild);
     }
 
     /// <summary>

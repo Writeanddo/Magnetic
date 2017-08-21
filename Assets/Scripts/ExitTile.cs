@@ -149,12 +149,12 @@ public class ExitTile : Tile
     }
 
     /// <summary>
-    /// Only when all switches have been turned is when this becomes enabled
+    /// When nothing is on this tile, then it is walkable
     /// </summary>
     /// <returns></returns>
     public override bool IsWalkable()
     {
-        return true;
+        return !this.hasObject;
     }
     
     /// <summary>
@@ -167,6 +167,26 @@ public class ExitTile : Tile
             this.winIsTriggered = true;
             this.PlaySound(this.exitSound);
             StartCoroutine(this.LoadSceneAfterSeconds(this.sceneLoadDelay));
+
+        // this may be an attractable item
+        } else {
+            IAttractable attractable = other.GetComponent<IAttractable>();
+            if(attractable != null && !attractable.IsAttached) {
+                this.hasObject = true;
+                this.objectOnTile = other.gameObject;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Object has left
+    /// </summary>
+    /// <param name="other"></param>
+    void OnTriggerExit(Collider other)
+    {
+        if(other.gameObject == this.objectOnTile) {
+            this.hasObject = false;
+            this.objectOnTile = null;
         }
     }
 

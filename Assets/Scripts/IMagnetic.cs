@@ -30,4 +30,10 @@ public interface IMagnetic
     /// How many tiles can this invoker repel an object
     /// </summary>
     int RepelTileDistance { get; }
+
+    /// <summary>
+    /// Allows the attractable items to tell the invoker to play
+    /// a repelling sound at will
+    /// </summary>
+    void PlayRepelSound();
 }

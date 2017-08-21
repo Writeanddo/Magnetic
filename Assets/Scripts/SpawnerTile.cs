@@ -13,7 +13,7 @@ public class SpawnerTile : NormalTile
     /// Types of spawner
     /// Mainly used to determine which material to us
     /// </summary>
-    enum Type
+    enum SpawnerType
     {
         CrateSpawner,
         BallSpawner,
@@ -23,7 +23,7 @@ public class SpawnerTile : NormalTile
     /// Which type of spawner tile this is
     /// </summary>
     [SerializeField]
-    Type spawnerType;
+    SpawnerType spawnerType;
 
     /// <summary>
     /// A reference to the model's mesh renderer
@@ -47,6 +47,12 @@ public class SpawnerTile : NormalTile
     /// True once the material for this spawner has been set
     /// </summary>
     bool materialSet = false;
+
+    /// <summary>
+    /// A reference to the particle system
+    /// </summary>
+    [SerializeField]
+    ParticleSystem particles;
     
     /// <summary>
     /// Because the Tile and NormalTile parents already use Awake and Start
@@ -59,13 +65,21 @@ public class SpawnerTile : NormalTile
             this.materialSet = true;
 
             switch(this.spawnerType) {
-                case Type.CrateSpawner:
+                case SpawnerType.CrateSpawner:
                     this.renderer.material = this.crateSpawnerMaterial;
                     break;
-                case Type.BallSpawner:
+                case SpawnerType.BallSpawner:
                     this.renderer.material = this.ballpawnerMaterial;
                     break;
             }
         }
+    }
+
+    /// <summary>
+    /// Triggers the particle effects to play
+    /// </summary>
+    public void PlayParticles()
+    {
+        this.particles.Play();
     }
 }

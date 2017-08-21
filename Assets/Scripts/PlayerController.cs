@@ -184,6 +184,12 @@ public class PlayerController : MonoBehaviour, IMagnetic
     ParticleSystem particles;
 
     /// <summary>
+    /// True when the attraction was cancelled
+    /// Helps to trigger only once
+    /// </summary>
+    bool attractionCancelled;
+
+    /// <summary>
     /// Initialize
     /// </summary>
     void Start ()
@@ -295,7 +301,10 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// attract them to the player 
     /// </summary>
     void Attract()
-    {        
+    {
+        // Attracting therefore not cancelled 
+        this.attractionCancelled = false;
+
         // We've calculated from this position so prevent doing so again
         this.attractedFromPosition = this.transform.position;
 
@@ -332,7 +341,7 @@ public class PlayerController : MonoBehaviour, IMagnetic
 
                     // Found a new attractable item
                     bool isNew = !this.attractables.Contains(attractable) && !this.attractablesPending.Contains(attractable);
-                    if(isNew) {
+                    if(isNew && attractable.CanBeAttracted) {
                         this.attractablesPending.Add(attractable);
 
                         // Instant when we are already attracting 
@@ -353,6 +362,11 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// </summary>
     void CancelAttraction()
     {
+        if(this.attractionCancelled) {
+            return;
+        }
+
+        this.attractionCancelled = true;
         foreach(IAttractable attractable in this.attractablesPending) {
             attractable.CancelAttract();
         }
@@ -448,12 +462,13 @@ public class PlayerController : MonoBehaviour, IMagnetic
 
     /// <summary>
     /// Invoked by an attractable that has finished attaching itself to the player
+    /// However, if the player is no longer attracting then the object is repelled
     /// </summary>
     /// <param name="attractable"></param>
     public void Attach(IAttractable attractable)
     {
         this.attractables.Add(attractable);
-        this.attractablesPending.Remove(attractable);
+        this.attractablesPending.Remove(attractable);  
     }
 
     /// <summary>
@@ -498,21 +513,16 @@ public class PlayerController : MonoBehaviour, IMagnetic
     /// <param name="clip"></param>
     void PlayLoopSound(AudioClip clip)
     {
-
         this.PlaySound(clip);
-        return;
+    }
+    
+    /// <summary>
+    /// Allows the attractables to invoke this sound once they have arrived to the player
+    /// and the player "cancelled" the attraction
+    /// </summary>
+    public void PlayRepelSound()
+    {
+        this.PlaySound(this.repelClip, true); 
+    }
 
-        this.audioSource.loop = true;
-
-        // Not the current sound
-        if( this.audioSource.clip != clip ) {
-            this.audioSource.Stop();
-            this.audioSource.clip = clip;
-        }
-
-        // Play it only if it is not currently playing
-        if(!this.audioSource.isPlaying) {
-            this.audioSource.Play();
-        }
-    }    
 }

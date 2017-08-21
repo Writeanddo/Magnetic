@@ -8,6 +8,11 @@ using UnityEngine;
 public interface IAttractable
 {
     /// <summary>
+    /// Whether or not the object is at a state where it can be attracted
+    /// </summary>
+    bool CanBeAttracted { get; }
+
+    /// <summary>
     /// Begins the processing of attaching to the invoker
     /// </summary>
     void Attract(IMagnetic invoker);
