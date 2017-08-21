@@ -19,10 +19,11 @@ public class HoleTile : Tile
     /// <summary>
     /// True when the there's a crate in it
     /// </summary>
+    [SerializeField]
     internal bool isFilled = false;
 
     /// <summary>
-    /// This tile is always available regardless of what's inside or not
+    /// This tile is available so long as there no object ontop of it
     /// </summary>
     /// <returns></returns>
     public override bool IsAvailable(){ return !this.hasObject; }

@@ -440,7 +440,7 @@ public class PlayerController : MonoBehaviour, IMagnetic
                 }
             }
 
-            if(childrenCanMove && this.levelController.IsPositionAvailable(targetDestination)) {
+            if(childrenCanMove && this.levelController.IsPositionAvailable(targetDestination)) {                
                 this.destination = targetDestination;
             }
 

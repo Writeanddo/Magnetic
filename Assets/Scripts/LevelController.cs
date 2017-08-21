@@ -227,12 +227,6 @@ public class LevelController : MonoBehaviour
 	public bool IsPositionAvailable(Vector3 position)
     {
         Tile tile = this.GetTileAtPosition(position, Color.red);
-
-        //if(!this.tilePositions.ContainsKey(position)) {
-        //    return false;
-        //}
-
-        //Tile tile = this.tilePositions[position];
         return tile != null && tile.IsWalkable();
     }
 
@@ -244,12 +238,6 @@ public class LevelController : MonoBehaviour
     public bool IsTileAtPositionAvailable(Vector3 position)
     {
         Tile tile = this.GetTileAtPosition(position, Color.blue);
-
-        //if(!this.tilePositions.ContainsKey(position)) {
-        //    return true;
-        //}
-
-        //Tile tile = this.tilePositions[position];
         return tile == null || tile.IsAvailable();
     }
 
@@ -261,7 +249,6 @@ public class LevelController : MonoBehaviour
     public bool IsPositionVoid(Vector3 position)
     {
         Tile tile = this.GetTileAtPosition(position, Color.yellow);
-        // bool exists = this.tilePositions.ContainsKey(position);
         return tile == null;
     }
 
@@ -278,12 +265,8 @@ public class LevelController : MonoBehaviour
         if(tileAtPosition != null) {
             tile = tileAtPosition.GetComponent<HoleTile>();
         }
-        
-        //if(this.tilePositions.ContainsKey(position)) {
-        //    tile = this.tilePositions[position].GetComponent<HoleTile>();
-        //}
 
-        return tile != null && !tile.IsWalkable();
+        return tile != null && !tile.isFilled;
     }
 
 
