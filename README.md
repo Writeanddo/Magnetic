@@ -10,5 +10,5 @@
 * Game Summary: Use a magnet to solve puzzles
 * How to Play: turn on all the floor switches in a level to activate the exit portal
  - Movement: WASD/Arrow Keys to move
- - Attrack: Hold Right-Mouse Button / Space
- - Release: Release Right-Mouse Button / Space
+ - Attrack: Hold Left-Mouse Button / Space
+ - Release: Release Left-Mouse Button / Space
